@@ -10,8 +10,8 @@ export default function Navbar() {
 				<Link href="/" className="hover:underline">
 					Home
 				</Link>
-				<Link href="/home" className="hover:underline">
-					Dashboard
+				<Link href="/explore" className="hover:underline">
+					Explore
 				</Link>
 				<Link href="/about" className="hover:underline">
 					About
