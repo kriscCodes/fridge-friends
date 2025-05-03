@@ -6,6 +6,7 @@ import FoodGrid from '@/components/FoodGrid';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import UserBarterPosts from '@/components/UserBarterPosts';
 
 export default function Home() {
 	return (
@@ -43,7 +44,7 @@ export default function Home() {
 					</TabsList>
 
 					<TabsContent value="all" className="mt-0">
-						<FoodGrid />
+						<UserBarterPosts></UserBarterPosts>
 					</TabsContent>
 					<TabsContent value="produce" className="mt-0">
 						<FoodGrid category="produce" />
