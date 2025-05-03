@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Bell } from 'lucide-react';
 
 export default function ExploreNavbar() {
 	return (
@@ -18,6 +19,12 @@ export default function ExploreNavbar() {
 							<Link href="/profile">
 								<Button variant="ghost" className="text-green-700">
 									My Profile
+								</Button>
+							</Link>
+							<Link href="/requests">
+								<Button variant="ghost" className="text-green-700">
+									<Bell className="h-4 w-4 mr-2" />
+									Requests
 								</Button>
 							</Link>
 						</div>
