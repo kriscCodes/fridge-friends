@@ -1,95 +1,123 @@
-'use client'
-import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
+'use client';
+import { useState } from 'react';
+import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 
 export default function RegisterPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [username, setUsername] = useState('')
-  const [error, setError] = useState(null)
-  const [success, setSuccess] = useState(null) // ✅ new state
-  const router = useRouter()
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const [username, setUsername] = useState('');
+	const [error, setError] = useState(null);
+	const router = useRouter();
 
-  const handleRegister = async (e) => {
-    e.preventDefault()
-    setError(null)
-    setSuccess(null)
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		setError(null);
 
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          username: username,
-        },
-      },
-    })
+		// First, create the auth user
+		const { data: authData, error: authError } = await supabase.auth.signUp({
+			email,
+			password,
+			options: {
+				data: {
+					username,
+				},
+			},
+		});
 
-    if (signUpError) {
-      setError(signUpError.message)
-      return
-    }
+		if (authError) {
+			setError(authError.message);
+			return;
+		}
 
-    const user = data.user
-    if (!user) {
-      setError('User signup failed. Please try again.')
-      return
-    }
+		// Then create the profile
+		const { error: profileError } = await supabase.from('profiles').insert({
+			id: authData.user.id,
+			username,
+			created_at: new Date().toISOString(),
+		});
 
-    const { error: profileError } = await supabase.from('profiles').insert({
-      id: user.id,
-      username: username,
-      created_at: new Date(),
-    })
+		if (profileError) {
+			setError(profileError.message);
+			return;
+		}
 
-    if (profileError) {
-      setError(profileError.message)
-      return
-    }
+		// If everything is successful, redirect to explore
+		router.push('/explore');
+	};
 
-    // ✅ Show success message
-    setSuccess('Registered successfully! Please check your email to confirm your account.')
-  }
+	return (
+		<div className="min-h-screen flex items-center justify-center p-4">
+			<div className="max-w-md w-full space-y-8">
+				<div>
+					<h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+						Create your account
+					</h2>
+				</div>
+				<form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+					{error && (
+						<div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+							{error}
+						</div>
+					)}
+					<div className="rounded-md shadow-sm -space-y-px">
+						<div>
+							<label htmlFor="email" className="sr-only">
+								Email address
+							</label>
+							<input
+								id="email"
+								name="email"
+								type="email"
+								required
+								className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+								placeholder="Email address"
+								value={email}
+								onChange={(e) => setEmail(e.target.value)}
+							/>
+						</div>
+						<div>
+							<label htmlFor="username" className="sr-only">
+								Username
+							</label>
+							<input
+								id="username"
+								name="username"
+								type="text"
+								required
+								className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+								placeholder="Username"
+								value={username}
+								onChange={(e) => setUsername(e.target.value)}
+							/>
+						</div>
+						<div>
+							<label htmlFor="password" className="sr-only">
+								Password
+							</label>
+							<input
+								id="password"
+								name="password"
+								type="password"
+								required
+								className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+								placeholder="Password"
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+							/>
+						</div>
+					</div>
 
-  return (
-    <main className="flex flex-col items-center justify-center min-h-screen p-6">
-      <h1 className="text-2xl font-bold mb-4">Register</h1>
-
-      <form onSubmit={handleRegister} className="flex flex-col gap-4 w-full max-w-sm">
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          className="p-2 border border-gray-300 rounded"
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          className="p-2 border border-gray-300 rounded"
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          className="p-2 border border-gray-300 rounded"
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button
-          type="submit"
-          className="bg-green-600 text-white py-2 rounded hover:bg-green-700"
-        >
-          Sign Up
-        </button>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-        {success && <p className="text-green-600 text-sm">{success}</p>} {/* ✅ rendered here */}
-      </form>
-    </main>
-  )
+					<div>
+						<button
+							type="submit"
+							className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+						>
+							Sign up
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	);
 }
