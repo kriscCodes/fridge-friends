@@ -8,28 +8,48 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('')
   const [username, setUsername] = useState('')
   const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(null) // ✅ new state
   const router = useRouter()
 
   const handleRegister = async (e) => {
     e.preventDefault()
     setError(null)
+    setSuccess(null)
 
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
-          username: username, // stored as user_metadata
+          username: username,
         },
       },
     })
 
-    if (error) {
-      setError(error.message)
-    } else {
-      alert('Registered successfully!')
-      router.push('/login') // or /dashboard
+    if (signUpError) {
+      setError(signUpError.message)
+      return
     }
+
+    const user = data.user
+    if (!user) {
+      setError('User signup failed. Please try again.')
+      return
+    }
+
+    const { error: profileError } = await supabase.from('profiles').insert({
+      id: user.id,
+      username: username,
+      created_at: new Date(),
+    })
+
+    if (profileError) {
+      setError(profileError.message)
+      return
+    }
+
+    // ✅ Show success message
+    setSuccess('Registered successfully! Please check your email to confirm your account.')
   }
 
   return (
@@ -68,6 +88,7 @@ export default function RegisterPage() {
           Sign Up
         </button>
         {error && <p className="text-red-500 text-sm">{error}</p>}
+        {success && <p className="text-green-600 text-sm">{success}</p>} {/* ✅ rendered here */}
       </form>
     </main>
   )
