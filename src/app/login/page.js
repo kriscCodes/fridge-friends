@@ -21,7 +21,7 @@ export default function LoginPage() {
     if (error) {
       setError(error.message)
     } else {
-      router.push('/dashboard') // or wherever your app goes after login
+      router.push('/explore') // or wherever your app goes after login
     }
   }
 
