@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,16 +12,28 @@ import {
 import { MapPin, MessageCircle } from 'lucide-react';
 import Image from 'next/image';
 import BarterRequestModal from './BarterRequestModal';
+import { supabase } from '@/lib/supabase';
 
 export function FoodCard({ item }) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [imageUrl, setImageUrl] = useState(null);
+
+	useEffect(() => {
+		if (item.image_url) {
+			const { data } = supabase.storage
+				.from('barter-images')
+				.getPublicUrl(item.image_url);
+			setImageUrl(data.publicUrl);
+		}
+	}, [item.image_url]);
+	console.log(item);
 
 	return (
 		<>
 			<Card className="overflow-hidden transition-all hover:shadow-md">
 				<div className="aspect-square relative overflow-hidden">
 					<Image
-						src={item.image || '/placeholder.svg'}
+						src={imageUrl || '/placeholder.svg'}
 						alt={item.name}
 						fill
 						className="object-cover transition-transform hover:scale-105"
@@ -45,7 +57,10 @@ export function FoodCard({ item }) {
 					<p className="text-sm text-muted-foreground line-clamp-2">
 						{item.description}
 					</p>
-					<p className="text-sm mt-2 font-medium">From: {item.owner}</p>
+					<p className="text-sm mt-2 font-medium">
+					From: {item.profile?.username || 'Unknown'}
+					</p>
+
 				</CardContent>
 
 				<CardFooter className="p-4 pt-0 flex gap-2">
