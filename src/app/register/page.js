@@ -1,123 +1,167 @@
-'use client';
-import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { useRouter } from 'next/navigation';
+"use client"
+import { useState } from "react"
+import { supabase } from "@/lib/supabase"
+import { useRouter } from "next/navigation"
+import Image from "next/image"
+import { Jersey_10 } from 'next/font/google'
+import { PixelButton } from "@/components/PixelButton"
+
+const jersey10 = Jersey_10({
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+})
 
 export default function RegisterPage() {
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
-	const [username, setUsername] = useState('');
-	const [error, setError] = useState(null);
-	const router = useRouter();
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [username, setUsername] = useState("")
+  const [error, setError] = useState(null)
+  const router = useRouter()
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		setError(null);
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setError(null)
 
-		// First, create the auth user
-		const { data: authData, error: authError } = await supabase.auth.signUp({
-			email,
-			password,
-			options: {
-				data: {
-					username,
-				},
-			},
-		});
+    // First, create the auth user
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          username,
+        },
+      },
+    })
 
-		if (authError) {
-			setError(authError.message);
-			return;
-		}
+    if (authError) {
+      setError(authError.message)
+      return
+    }
 
-		// Then create the profile
-		const { error: profileError } = await supabase.from('profiles').insert({
-			id: authData.user.id,
-			username,
-			created_at: new Date().toISOString(),
-		});
+    // Then create the profile
+    const { error: profileError } = await supabase.from("profiles").insert({
+      id: authData.user.id,
+      username,
+      created_at: new Date().toISOString(),
+    })
 
-		if (profileError) {
-			setError(profileError.message);
-			return;
-		}
+    if (profileError) {
+      setError(profileError.message)
+      return
+    }
 
-		// If everything is successful, redirect to explore
-		router.push('/explore');
-	};
+    // If everything is successful, redirect to explore
+    router.push("/explore")
+  }
 
-	return (
-		<div className="min-h-screen flex items-center justify-center p-4">
-			<div className="max-w-md w-full space-y-8">
-				<div>
-					<h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-						Create your account
-					</h2>
-				</div>
-				<form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-					{error && (
-						<div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-							{error}
-						</div>
-					)}
-					<div className="rounded-md shadow-sm -space-y-px">
-						<div>
-							<label htmlFor="email" className="sr-only">
-								Email address
-							</label>
-							<input
-								id="email"
-								name="email"
-								type="email"
-								required
-								className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-								placeholder="Email address"
-								value={email}
-								onChange={(e) => setEmail(e.target.value)}
-							/>
-						</div>
-						<div>
-							<label htmlFor="username" className="sr-only">
-								Username
-							</label>
-							<input
-								id="username"
-								name="username"
-								type="text"
-								required
-								className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-								placeholder="Username"
-								value={username}
-								onChange={(e) => setUsername(e.target.value)}
-							/>
-						</div>
-						<div>
-							<label htmlFor="password" className="sr-only">
-								Password
-							</label>
-							<input
-								id="password"
-								name="password"
-								type="password"
-								required
-								className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-								placeholder="Password"
-								value={password}
-								onChange={(e) => setPassword(e.target.value)}
-							/>
-						</div>
-					</div>
+  return (
+    <div className="relative min-h-screen w-full overflow-hidden flex items-center justify-center">
+      {/* Background Image */}
+      <div className="absolute inset-0 z-0">
+        <Image 
+          src="/images/NYCBG.png" 
+          alt="NYC Pixel Background" 
+          fill 
+          className="object-cover image-rendering-pixelated" 
+          priority
+          unoptimized={true}
+        />
+      </div>
 
-					<div>
-						<button
-							type="submit"
-							className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-						>
-							Sign up
-						</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	);
+      {/* Signup Form Container */}
+      <div className="relative z-10 w-full max-w-md px-4">
+        <form onSubmit={handleSubmit} className="flex flex-col items-center">
+          {error && (
+            <div className="bg-red-100 border-2 border-red-400 text-red-700 px-4 py-3 rounded mb-4 w-full">{error}</div>
+          )}
+
+          {/* Username Field */}
+          <div className="w-full mb-6">
+            <div
+              className={`text-4xl text-white ${jersey10.className} mb-2`}
+              style={{
+                WebkitTextStroke: "1px black",
+                textShadow: "2px 2px 0px #000",
+              }}
+            >
+              Username :
+            </div>
+
+            <input
+              id="username"
+              name="username"
+              type="text"
+              required
+              className="w-full px-4 py-3 border-4 border-black bg-white rounded-none appearance-none text-lg"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              style={{
+                boxShadow: "4px 4px 0px rgba(0, 0, 0, 0.2)",
+              }}
+            />
+          </div>
+
+          {/* Email Field */}
+          <div className="w-full mb-6">
+            <div
+              className={`text-4xl text-white ${jersey10.className} mb-2`}
+              style={{
+                WebkitTextStroke: "1px black",
+                textShadow: "2px 2px 0px #000",
+              }}
+            >
+              Email :
+            </div>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              className="w-full px-4 py-3 border-4 border-black bg-white rounded-none appearance-none text-lg"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={{
+                boxShadow: "4px 4px 0px rgba(0, 0, 0, 0.2)",
+              }}
+            />
+          </div>
+
+          {/* Password Field */}
+          <div className="w-full mb-8">
+            <div
+              className={`text-4xl text-white ${jersey10.className} mb-2`}
+              style={{
+                WebkitTextStroke: "1px black",
+                textShadow: "2px 2px 0px #000",
+              }}
+            >
+              Password :
+            </div>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              className="w-full px-4 py-3 border-4 border-black bg-white rounded-none appearance-none text-lg"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={{
+                boxShadow: "4px 4px 0px rgba(0, 0, 0, 0.2)",
+              }}
+            />
+          </div>
+
+          {/* Sign Up Button */}
+          <PixelButton 
+  src="/images/SIGNUPButton.png" 
+  alt="Sign Up" 
+  width={250}  
+  height={100}  
+  onClick={handleSubmit} 
+/>
+        </form>
+      </div>
+    </div>
+  )
 }
