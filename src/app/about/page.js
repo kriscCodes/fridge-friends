@@ -16,7 +16,7 @@ export default function About() {
 						share your fridge contents with friends and family.
 					</p>
 					<p className="text-lg text-gray-600">
-						Never wonder what's in your fridge again, and easily coordinate
+						Never wonder what is in your fridge again, and easily coordinate
 						grocery shopping with your roommates!
 					</p>
 				</div>
