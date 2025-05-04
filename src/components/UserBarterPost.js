@@ -10,16 +10,33 @@ const jersey10 = Jersey_10({
   display: "swap",
 })
 
-export default function UserBarterPost({ post }) {
+export default function UserBarterPost({ post, onDelete }) {
   const [imageUrl, setImageUrl] = useState(null)
 
   useEffect(() => {
     if (post.image_url) {
       const { data } = supabase.storage.from("barter-images").getPublicUrl(post.image_url)
-
       setImageUrl(data.publicUrl)
     }
   }, [post.image_url])
+
+  const handleDelete = async () => {
+    const confirmed = confirm(`Are you sure you want to delete "${post.name}"?`)
+    if (!confirmed) return
+
+    const { error } = await supabase
+      .from("barter_posts")
+      .delete()
+      .eq("post_id", post.post_id)
+
+    if (error) {
+      alert("Failed to delete post: " + error.message)
+      console.error(error)
+    } else {
+      alert("Post deleted!")
+      if (onDelete) onDelete(post.post_id)
+    }
+  }
 
   return (
     <div
@@ -39,10 +56,7 @@ export default function UserBarterPost({ post }) {
       )}
 
       <div>
-        <div
-          className={`text-2xl text-black ${jersey10.className} mb-1 uppercase`}
-
-        >
+        <div className={`text-2xl text-black ${jersey10.className} mb-1 uppercase`}>
           {post.name}
         </div>
         <p className="text-sm text-gray-700 line-clamp-2 font-bold" style={{ fontFamily: "monospace" }}>
@@ -51,16 +65,18 @@ export default function UserBarterPost({ post }) {
       </div>
 
       <div className="text-sm text-gray-700 mt-1 font-bold" style={{ fontFamily: "monospace" }}>
-        <p>
-          <strong>Type:</strong> {post.type}
-        </p>
-        <p>
-          <strong>Barter:</strong> {post.barter_type}
-        </p>
-        <p>
-          <strong>Deadline:</strong> {new Date(post.deadline).toLocaleDateString()}
-        </p>
+        <p><strong>Type:</strong> {post.type}</p>
+        <p><strong>Barter:</strong> {post.barter_type}</p>
+        <p><strong>Deadline:</strong> {new Date(post.deadline).toLocaleDateString()}</p>
       </div>
+
+      <button
+        onClick={handleDelete}
+        className="mt-2 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold border-2 border-black hover:bg-red-700 transition"
+        style={{ fontFamily: "monospace" }}
+      >
+        Delete Post
+      </button>
     </div>
   )
 }
