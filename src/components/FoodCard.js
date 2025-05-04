@@ -1,18 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-} from '@/components/ui/card';
-import { MapPin, MessageCircle } from 'lucide-react';
 import Image from 'next/image';
-import BarterRequestModal from './BarterRequestModal';
 import { supabase } from '@/lib/supabase';
+import BarterRequestModal from './BarterRequestModal';
 
 export function FoodCard({ item }) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,57 +17,57 @@ export function FoodCard({ item }) {
 			setImageUrl(data.publicUrl);
 		}
 	}, [item.image_url]);
-	console.log(item);
 
 	return (
 		<>
-			<Card className="overflow-hidden transition-all hover:shadow-md">
-				<div className="aspect-square relative overflow-hidden">
-					<Image
-						src={imageUrl || '/placeholder.svg'}
-						alt={item.name}
-						fill
-						className="object-cover transition-transform hover:scale-105"
-					/>
-					<Badge className="absolute top-3 right-3 bg-green-600">
-						{item.category}
-					</Badge>
-				</div>
-
-				<CardHeader className="p-4 pb-0">
-					<div className="flex justify-between items-start">
-						<h3 className="font-semibold text-lg">{item.name}</h3>
+			<div
+				className="bg-white border-4 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex flex-col gap-2 items-stretch"
+				style={{ imageRendering: 'pixelated', minWidth: 280, maxWidth: 340 }}
+			>
+				{imageUrl && (
+					<div className="relative w-full h-40 overflow-hidden rounded-lg border-4 border-black">
+						<Image
+							src={imageUrl || '/placeholder.svg'}
+							alt={item.name}
+							fill
+							className="object-cover"
+							style={{ imageRendering: 'pixelated' }}
+						/>
 					</div>
-					<div className="flex items-center text-sm text-muted-foreground mt-1">
-						<MapPin className="h-3 w-3 mr-1" />
-						<p className="text-sm text-muted-foreground mt-1">
-							{item.distance ? `${item.distance.toFixed(2)} miles away` : ''}
-						</p>
-					</div>
-				</CardHeader>
+				)}
 
-				<CardContent className="p-4 pt-2">
-					<p className="text-sm text-muted-foreground line-clamp-2">
+				<div>
+					<div className="text-2xl text-black mb-1 uppercase font-bold truncate">
+						{item.name}
+					</div>
+					<div className="text-xs text-gray-700 font-mono">
+						{item.distance ? `${item.distance.toFixed(2)} miles away` : ''}
+					</div>
+					<p className="text-sm text-gray-700 line-clamp-2 font-bold font-mono">
 						{item.description}
 					</p>
-					<p className="text-sm mt-2 font-medium">
-						From: {item.profiles?.username || 'Unknown'}
-					</p>
-				</CardContent>
+				</div>
 
-				<CardFooter className="p-4 pt-0 flex gap-2">
-					<Button
-						className="w-full bg-green-600 hover:bg-green-700"
-						onClick={() => setIsModalOpen(true)}
-					>
-						Barter
-					</Button>
-					<Button variant="outline" size="icon">
-						<MessageCircle className="h-4 w-4" />
-						<span className="sr-only">Message</span>
-					</Button>
-				</CardFooter>
-			</Card>
+				<div className="text-sm text-gray-700 mt-1 font-bold font-mono">
+					<p>From: {item.profiles?.username || 'Unknown'}</p>
+				</div>
+
+				<button
+					onClick={() => setIsModalOpen(true)}
+					className="mt-2 flex justify-center items-center focus:outline-none border-none bg-transparent p-0 transition-transform hover:scale-105 active:scale-95"
+					aria-label="Barter for this item"
+					style={{ fontFamily: 'monospace' }}
+				>
+					<Image
+						src="/images/Barterbutton.png"
+						alt="Barter"
+						width={80}
+						height={28}
+						className="object-contain"
+						style={{ imageRendering: 'pixelated' }}
+					/>
+				</button>
+			</div>
 
 			<BarterRequestModal
 				isOpen={isModalOpen}

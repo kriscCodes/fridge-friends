@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function BarterRequestModal({ isOpen, onClose, post }) {
 	const [offerName, setOfferName] = useState('');
@@ -95,62 +96,95 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-			<div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-lg">
-				<h2 className="text-2xl font-bold mb-6 text-center">
-					Make a Barter Offer
+			<div
+				className="bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] w-full max-w-lg"
+				style={{ borderRadius: 0, imageRendering: 'pixelated' }}
+			>
+				<h2
+					className="text-2xl font-bold mb-4 text-center font-mono uppercase tracking-widest"
+					style={{ textShadow: '2px 2px 0px #000' }}
+				>
+					MAKE A BARTER OFFER
 				</h2>
-				<form onSubmit={handleSubmit} className="space-y-4">
+				<form onSubmit={handleSubmit} className="space-y-2">
 					<div>
-						<label className="block text-sm font-medium mb-1">
-							What are you offering?
+						<label className="block text-xs font-bold mb-1 font-mono uppercase tracking-widest">
+							WHAT ARE YOU OFFERING?
 						</label>
-						<Input
+						<input
 							type="text"
 							value={offerName}
 							onChange={(e) => setOfferName(e.target.value)}
-							placeholder="e.g., Fresh Basil, Homemade Bread..."
+							placeholder="E.G. FRESH BASIL, HOMEMADE BREAD..."
 							required
+							className="w-full px-2 py-1 border-4 border-black font-mono text-sm uppercase tracking-widest focus:outline-none"
+							style={{ borderRadius: 0 }}
 						/>
 					</div>
 					<div>
-						<label className="block text-sm font-medium mb-1">
-							Description
+						<label className="block text-xs font-bold mb-1 font-mono uppercase tracking-widest">
+							DESCRIPTION
 						</label>
-						<Textarea
+						<textarea
 							value={offerDescription}
 							onChange={(e) => setOfferDescription(e.target.value)}
-							placeholder="Describe what you're offering..."
+							placeholder="TELL US MORE ABOUT YOUR OFFER..."
 							required
+							className="w-full px-2 py-1 border-4 border-black font-mono text-sm uppercase tracking-widest focus:outline-none min-h-[60px]"
+							style={{ borderRadius: 0 }}
 						/>
 					</div>
 					<div>
-						<label className="block text-sm font-medium mb-1">
-							Image (optional)
+						<label className="block text-xs font-bold mb-1 font-mono uppercase tracking-widest">
+							IMAGE (OPTIONAL)
 						</label>
+						<input
+							type="file"
+							accept="image/*"
+							onChange={handleImageChange}
+							className="w-full px-2 py-1 border-4 border-black font-mono text-xs focus:outline-none"
+							style={{ borderRadius: 0 }}
+						/>
 						{imagePreview && (
-							<div className="mb-2">
+							<div
+								className="mt-2 mb-1 border-4 border-black"
+								style={{
+									width: 120,
+									height: 120,
+									imageRendering: 'pixelated',
+									borderRadius: 0,
+								}}
+							>
 								<img
 									src={imagePreview}
 									alt="Preview"
-									className="max-h-32 rounded-lg"
+									style={{
+										width: '100%',
+										height: '100%',
+										objectFit: 'cover',
+										imageRendering: 'pixelated',
+										borderRadius: 0,
+									}}
 								/>
 							</div>
 						)}
-						<Input type="file" accept="image/*" onChange={handleImageChange} />
 					</div>
-					{error && <p className="text-red-500 text-sm">{error}</p>}
-					<div className="flex justify-end space-x-3 pt-4">
-						<Button
+					<div className="flex justify-end gap-2 mt-4">
+						<button
 							type="button"
-							variant="outline"
 							onClick={onClose}
-							disabled={loading}
+							className="px-4 py-2 bg-red-600 text-white font-mono font-bold uppercase border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:outline-none"
+							style={{ borderRadius: 0, letterSpacing: '0.08em' }}
 						>
 							Cancel
-						</Button>
-						<Button type="submit" disabled={loading}>
-							{loading ? 'Sending...' : 'Send Offer'}
-						</Button>
+						</button>
+						<button
+							type="submit"
+							className="px-4 py-2 bg-green-600 text-white font-mono font-bold uppercase border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:outline-none"
+							style={{ borderRadius: 0, letterSpacing: '0.08em' }}
+						>
+							Submit
+						</button>
 					</div>
 				</form>
 			</div>
