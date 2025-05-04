@@ -15,7 +15,7 @@ const tabButtons = [
 
 const sidebarButtons = [
 	{
-		label: 'Create Listing',
+		label: 'Post',
 		img: '/images/PlusIcon_Centered.png',
 		href: '/profile',
 	},
@@ -35,8 +35,8 @@ export default function Explore() {
 				priority
 			/>
 
-			{/* Sidebar */}
-			<aside className="fixed right-8 top-32 flex flex-col items-center gap-6 z-20">
+			{/* Sidebar (desktop) */}
+			<aside className="hidden md:flex fixed right-8 top-32 flex-col items-center gap-6 z-20">
 				{sidebarButtons.map((btn) => (
 					<a
 						key={btn.label}
@@ -58,10 +58,39 @@ export default function Explore() {
 				))}
 			</aside>
 
+			{/* Top Navbar (mobile) */}
+			<nav
+				className="flex md:hidden fixed top-0 left-0 w-full bg-white border-b-4 border-black z-30 flex-row justify-center items-center gap-2 py-2 shadow-[0_4px_0px_0px_rgba(0,0,0,1)]"
+				style={{ imageRendering: 'pixelated' }}
+			>
+				{sidebarButtons.map((btn) => (
+					<a
+						key={btn.label}
+						href={btn.href}
+						className="flex flex-col items-center mx-2"
+					>
+						<Image
+							src={btn.img}
+							alt={btn.label}
+							width={40}
+							height={40}
+							className="object-contain w-[40px] h-[40px]"
+							style={{ background: 'transparent' }}
+						/>
+						<span
+							className="text-black font-bold text-xs mt-0.5"
+							style={{ fontFamily: 'monospace', letterSpacing: '0.05em' }}
+						>
+							{btn.label}
+						</span>
+					</a>
+				))}
+			</nav>
+
 			{/* Main Content with Tabs */}
-			<main className="relative z-10 max-w-6xl mx-auto pt-8 pb-16 px-4">
+			<main className="relative z-10 max-w-6xl mx-auto pt-24 md:pt-8 pb-16 px-4">
 				<Tabs defaultValue="all" className="w-full">
-					<TabsList className="flex flex-row flex-wrap justify-center gap-2 mb-8 bg-transparent border-none shadow-none">
+					<TabsList className="grid grid-cols-3 grid-rows-2 gap-2 gap-y-3 mb-8 bg-transparent border-none shadow-none md:flex md:flex-row md:flex-wrap md:justify-center">
 						{tabButtons.map((tab) => (
 							<TabsTrigger
 								key={tab.label}
@@ -69,7 +98,7 @@ export default function Explore() {
 								className="group bg-transparent border-none shadow-none p-0 focus:ring-0 focus:outline-none transition-transform data-[state=active]:bg-transparent"
 								style={{ background: 'transparent' }}
 							>
-								<span className="inline-flex items-center justify-center w-[120px] h-[40px] bg-white/0 rounded-lg overflow-hidden">
+								<span className="inline-flex items-center justify-center w-full h-full min-w-[100px] min-h-[36px] bg-white/0 overflow-hidden">
 									<Image
 										src={tab.img}
 										alt={tab.label}

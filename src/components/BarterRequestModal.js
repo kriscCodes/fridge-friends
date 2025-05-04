@@ -27,6 +27,7 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		console.log('submit fired');
 		setLoading(true);
 		setError(null);
 
@@ -68,7 +69,7 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 				status: 'pending',
 			});
 
-			const { error: requestError } = await supabase
+			const { error: requestError, data: insertData } = await supabase
 				.from('barter_requests')
 				.insert({
 					post_id: post.post_id,
@@ -79,6 +80,7 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 					offer_image: imageUrl,
 					status: 'pending',
 				});
+			console.log('insertData:', insertData, 'requestError:', requestError);
 
 			if (requestError) throw requestError;
 
@@ -87,6 +89,7 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 			router.refresh();
 		} catch (err) {
 			setError(err.message);
+			console.error('Barter request error:', err);
 		} finally {
 			setLoading(false);
 		}
