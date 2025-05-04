@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
+import Navbar from '@/components/Navbar';
 
 export default function RequestsPage() {
 	const [requests, setRequests] = useState([]);
@@ -103,103 +104,141 @@ export default function RequestsPage() {
 		}
 	};
 
-	if (loading) return <div>Loading requests...</div>;
-	if (error) return <div className="text-red-500">{error}</div>;
+	if (loading)
+		return (
+			<div
+				className="min-h-screen w-full flex items-center justify-center"
+				style={{
+					backgroundImage: "url('/images/BarterRequestsbg.png')",
+					backgroundSize: 'cover',
+					backgroundPosition: 'center',
+					imageRendering: 'pixelated',
+				}}
+			>
+				<p
+					className="text-white text-2xl font-bold"
+					style={{ fontFamily: 'monospace', textShadow: '2px 2px 0px #000' }}
+				>
+					Loading requests...
+				</p>
+			</div>
+		);
+
+	if (error) return <div className="text-red-500 p-8 font-mono">{error}</div>;
 
 	return (
-		<div className="container mx-auto px-4 py-8">
-			<h1 className="text-2xl font-bold mb-6">Barter Requests</h1>
+		<>
+			<Navbar />
+			<main
+				className="flex flex-col items-center min-h-screen p-6"
+				style={{
+					backgroundImage: "url('/images/BarterRequestsbg.png')",
+					backgroundSize: 'cover',
+					backgroundPosition: 'center',
+					imageRendering: 'pixelated',
+				}}
+			>
+				<h1 className="text-2xl font-bold mb-6">Barter Requests</h1>
 
-			{requests.length === 0 ? (
-				<p>No pending requests</p>
-			) : (
-				<div className="grid gap-6">
-					{requests.map((request) => (
-						<Card key={request.id} className="overflow-hidden">
-							<CardHeader className="bg-gray-50 p-4">
-								<div className="flex justify-between items-start">
-									<div>
-										<h3 className="font-semibold">
-											{request.barter_posts.name}
-										</h3>
-										<p className="text-sm text-gray-500">
-											From:{' '}
-											{request.from_user.raw_user_meta_data?.username ||
-												'Unknown User'}
-										</p>
-									</div>
-									<Badge
-										className={`
-                      ${request.status === 'pending' ? 'bg-yellow-500' : ''}
-                      ${request.status === 'accepted' ? 'bg-green-500' : ''}
-                      ${request.status === 'rejected' ? 'bg-red-500' : ''}
-                    `}
-									>
-										{request.status}
-									</Badge>
-								</div>
-							</CardHeader>
-							<CardContent className="p-4">
-								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-									<div>
-										<h4 className="font-medium mb-2">Their Offer:</h4>
-										<p className="text-sm">{request.offer_name}</p>
-										<p className="text-sm text-gray-600 mt-1">
-											{request.offer_description}
-										</p>
-										{request.offer_image && (
-											<div className="mt-2 relative aspect-square w-32">
-												<Image
-													src={request.offer_image}
-													alt={request.offer_name}
-													fill
-													className="object-cover rounded"
-												/>
-											</div>
-										)}
-									</div>
-									<div>
-										<h4 className="font-medium mb-2">Your Item:</h4>
-										<p className="text-sm">{request.barter_posts.name}</p>
-										<p className="text-sm text-gray-600 mt-1">
-											{request.barter_posts.description}
-										</p>
-										{request.barter_posts.image && (
-											<div className="mt-2 relative aspect-square w-32">
-												<Image
-													src={request.barter_posts.image}
-													alt={request.barter_posts.name}
-													fill
-													className="object-cover rounded"
-												/>
-											</div>
-										)}
-									</div>
-								</div>
-								{request.status === 'pending' && (
-									<div className="flex gap-2 mt-4">
-										<Button
-											variant="outline"
-											onClick={() =>
-												handleRequestAction(request.id, 'rejected')
-											}
+				{requests.length === 0 ? (
+					<p>No pending requests</p>
+				) : (
+					<div className="grid gap-8">
+						{requests.map((request) => (
+							<div
+								key={request.id}
+								className="bg-white border-4 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex flex-col gap-2 items-stretch"
+								style={{
+									imageRendering: 'pixelated',
+									minWidth: 280,
+									maxWidth: 340,
+								}}
+							>
+								<CardHeader className="bg-gray-50 p-4">
+									<div className="flex justify-between items-start">
+										<div>
+											<h3 className="font-semibold">
+												{request.barter_posts.name}
+											</h3>
+											<p className="text-sm text-gray-500">
+												From:{' '}
+												{request.from_user.raw_user_meta_data?.username ||
+													'Unknown User'}
+											</p>
+										</div>
+										<Badge
+											className={`
+												${request.status === 'pending' ? 'bg-yellow-500' : ''}
+												${request.status === 'accepted' ? 'bg-green-500' : ''}
+												${request.status === 'rejected' ? 'bg-red-500' : ''}
+											`}
 										>
-											Reject
-										</Button>
-										<Button
-											onClick={() =>
-												handleRequestAction(request.id, 'accepted')
-											}
-										>
-											Accept
-										</Button>
+											{request.status}
+										</Badge>
 									</div>
-								)}
-							</CardContent>
-						</Card>
-					))}
-				</div>
-			)}
-		</div>
+								</CardHeader>
+								<CardContent className="p-4">
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+										<div>
+											<h4 className="font-medium mb-2">Their Offer:</h4>
+											<p className="text-sm">{request.offer_name}</p>
+											<p className="text-sm text-gray-600 mt-1">
+												{request.offer_description}
+											</p>
+											{request.offer_image && (
+												<div className="mt-2 relative aspect-square w-32">
+													<Image
+														src={request.offer_image}
+														alt={request.offer_name}
+														fill
+														className="object-cover rounded"
+													/>
+												</div>
+											)}
+										</div>
+										<div>
+											<h4 className="font-medium mb-2">Your Item:</h4>
+											<p className="text-sm">{request.barter_posts.name}</p>
+											<p className="text-sm text-gray-600 mt-1">
+												{request.barter_posts.description}
+											</p>
+											{request.barter_posts.image && (
+												<div className="mt-2 relative aspect-square w-32">
+													<Image
+														src={request.barter_posts.image}
+														alt={request.barter_posts.name}
+														fill
+														className="object-cover rounded"
+													/>
+												</div>
+											)}
+										</div>
+									</div>
+									{request.status === 'pending' && (
+										<div className="flex gap-2 mt-4">
+											<Button
+												variant="outline"
+												onClick={() =>
+													handleRequestAction(request.id, 'rejected')
+												}
+											>
+												Reject
+											</Button>
+											<Button
+												onClick={() =>
+													handleRequestAction(request.id, 'accepted')
+												}
+											>
+												Accept
+											</Button>
+										</div>
+									)}
+								</CardContent>
+							</div>
+						))}
+					</div>
+				)}
+			</main>
+		</>
 	);
 }
