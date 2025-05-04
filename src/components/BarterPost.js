@@ -87,7 +87,7 @@ export default function BarterPostModal({ isOpen, onClose }) {
   <div
     className="absolute inset-0 z-0"
     style={{
-      backgroundImage: `url('/images/BarteringBG.png')`,
+      backgroundImage: `url('/images/Bartering.png')`,
       backgroundSize: "cover",
       backgroundPosition: "center",
     }}
