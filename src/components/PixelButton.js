@@ -17,7 +17,7 @@ export function PixelButton({ onClick, src, alt, width, height }) {
         imageRendering: 'pixelated'
       }}>
         <Image
-          src={src || "/placeholder.svg"}
+          src={src}
           alt={alt}
           fill
           sizes="100%"
