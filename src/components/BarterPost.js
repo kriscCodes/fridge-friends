@@ -171,8 +171,11 @@ export default function BarterPostModal({ isOpen, onClose }) {
                   <option value="" disabled>
                     Select type
                   </option>
-                  <option value="item">Item</option>
-                  <option value="service">Service</option>
+                  <option value="item">Fruits</option>
+                  <option value="service">Vegetables</option>
+                  <option value="other">Grains</option>
+                  <option value="other">Dairy</option>
+                  <option value="other">Protein</option>
                   <option value="other">Other</option>
                 </select>
               </div>
