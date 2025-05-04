@@ -2,10 +2,41 @@ import { FoodCard } from '@/components/FoodCard';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
+function haversine(lat1, lon1, lat2, lon2) {
+	const R = 3958.8; // miles
+	const dLat = ((lat2 - lat1) * Math.PI) / 180;
+	const dLon = ((lon2 - lon1) * Math.PI) / 180;
+	const a =
+		Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+		Math.cos((lat1 * Math.PI) / 180) *
+			Math.cos((lat2 * Math.PI) / 180) *
+			Math.sin(dLon / 2) *
+			Math.sin(dLon / 2);
+	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+	return R * c;
+}
+
 export default function FoodGrid({ category }) {
 	const [posts, setPosts] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
+	const [userLocation, setUserLocation] = useState(null);
+
+	useEffect(() => {
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(
+				(pos) => {
+					setUserLocation({
+						latitude: pos.coords.latitude,
+						longitude: pos.coords.longitude,
+					});
+				},
+				(err) => {
+					setUserLocation(null);
+				}
+			);
+		}
+	}, []);
 
 	useEffect(() => {
 		const fetchPosts = async () => {
@@ -14,12 +45,14 @@ export default function FoodGrid({ category }) {
 			// Join the profiles table using Supabase's foreign key aliasing
 			let query = supabase
 				.from('barter_posts')
-				.select(`
+				.select(
+					`
 	*,
 	profiles (
 		username
 	)
-`)
+`
+				)
 
 				.order('created_at', { ascending: false });
 
@@ -33,14 +66,32 @@ export default function FoodGrid({ category }) {
 			if (error) {
 				setError(error.message);
 			} else {
-				setPosts(data);
+				let filtered = data;
+				if (userLocation) {
+					filtered = data
+						.map((post) => {
+							if (post.latitude && post.longitude) {
+								const distance = haversine(
+									userLocation.latitude,
+									userLocation.longitude,
+									post.latitude,
+									post.longitude
+								);
+								return { ...post, distance };
+							}
+							return { ...post, distance: null };
+						})
+						.filter((post) => post.distance !== null && post.distance <= 0.5) // 0.5 miles
+						.sort((a, b) => a.distance - b.distance);
+				}
+				setPosts(filtered);
 			}
 
 			setLoading(false);
 		};
 
 		fetchPosts();
-	}, [category]);
+	}, [category, userLocation]);
 
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div className="text-red-500">{error}</div>;

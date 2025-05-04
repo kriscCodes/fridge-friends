@@ -49,7 +49,9 @@ export function FoodCard({ item }) {
 					</div>
 					<div className="flex items-center text-sm text-muted-foreground mt-1">
 						<MapPin className="h-3 w-3 mr-1" />
-						<span>{item.distance}</span>
+						<p className="text-sm text-muted-foreground mt-1">
+							{item.distance ? `${item.distance.toFixed(2)} miles away` : ''}
+						</p>
 					</div>
 				</CardHeader>
 
@@ -58,9 +60,8 @@ export function FoodCard({ item }) {
 						{item.description}
 					</p>
 					<p className="text-sm mt-2 font-medium">
-					From: {item.profiles?.username || 'Unknown'}
+						From: {item.profiles?.username || 'Unknown'}
 					</p>
-
 				</CardContent>
 
 				<CardFooter className="p-4 pt-0 flex gap-2">

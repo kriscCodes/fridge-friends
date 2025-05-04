@@ -15,6 +15,15 @@ export default function TradesPage() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 
+	// Helper to get public URL for barter post images
+	const getBarterImageUrl = (image_url) => {
+		if (!image_url) return null;
+		const { data } = supabase.storage
+			.from('barter-images')
+			.getPublicUrl(image_url);
+		return data.publicUrl;
+	};
+
 	useEffect(() => {
 		const fetchTrades = async () => {
 			try {
@@ -46,8 +55,25 @@ export default function TradesPage() {
 					.order('created_at', { ascending: false });
 				if (historyError) throw historyError;
 
-				setOngoing(ongoingData);
-				setHistory(historyData);
+				// Map barter_posts.image_url to public URL for ongoing
+				const ongoingWithUrls = ongoingData.map((trade) => ({
+					...trade,
+					barter_posts: {
+						...trade.barter_posts,
+						image_url: getBarterImageUrl(trade.barter_posts?.image_url),
+					},
+				}));
+				// Map barter_posts.image_url to public URL for history
+				const historyWithUrls = historyData.map((trade) => ({
+					...trade,
+					barter_posts: {
+						...trade.barter_posts,
+						image_url: getBarterImageUrl(trade.barter_posts?.image_url),
+					},
+				}));
+
+				setOngoing(ongoingWithUrls);
+				setHistory(historyWithUrls);
 			} catch (err) {
 				setError(err.message);
 			} finally {
