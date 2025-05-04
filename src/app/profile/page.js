@@ -16,6 +16,14 @@ export default function ProfilePage() {
   const handlePost = async ({ title, description }) => {
     console.log("Creating post:", title, description)
   }
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      console.error('Error signing out:', error.message)
+    } else {
+      router.push('/login') // Redirect after logout
+    }
+  }
 
   useEffect(() => {
     const getProfile = async () => {
@@ -126,7 +134,7 @@ export default function ProfilePage() {
           </div>
 
           <div className="flex justify-center mt-8">
-            <button
+            <button onClick={() => handleSignOut()}
               className="bg-red-600 text-white px-8 py-3 rounded-lg border-4 border-black font-bold uppercase hover:bg-red-700 transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
               style={{ fontFamily: "monospace", letterSpacing: "1px" }}
             >

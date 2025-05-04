@@ -60,14 +60,15 @@ export default function UserBarterPosts({ limit = 5 }) {
     )
 
   return (
-    <div className="mt-8 w-full max-w-4xl">
+    <div className="mt-8 w-full max-w-6xl">
       <h2
         className="text-2xl font-bold mb-4 text-white uppercase"
         style={{ fontFamily: "monospace", textShadow: "2px 2px 0px #000" }}
       >
         My Listings:
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+
         {posts.map((post) => (
           <UserBarterPost key={post.post_id} post={post} />
         ))}

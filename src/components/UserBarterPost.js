@@ -41,7 +41,7 @@ export default function UserBarterPost({ post }) {
       <div>
         <div
           className={`text-2xl text-black ${jersey10.className} mb-1 uppercase`}
-          style={{ textShadow: "2px 2px 0px #000" }}
+
         >
           {post.name}
         </div>
