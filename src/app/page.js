@@ -48,10 +48,7 @@ export default function Home() {
 				</Link>
 			</div>
 
-			{/* Test plain text link for routing debug */}
-			<div className="absolute top-24 right-6 z-20">
-				<Link href="/login">Test Login Link</Link>
-			</div>
+
 
 			{/* Centered content */}
 			<div className="relative z-10 flex flex-col items-center justify-center min-h-screen">
