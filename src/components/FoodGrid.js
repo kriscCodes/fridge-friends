@@ -98,10 +98,18 @@ export default function FoodGrid({ category }) {
 	if (!posts.length) return <div>No posts found.</div>;
 
 	return (
+		<>
+		<h2
+        className="text-2xl font-bold mb-4 text-white uppercase"
+        style={{ fontFamily: "monospace", textShadow: "2px 2px 0px #000" }}
+      >
+        NEARBY BARTER :
+      </h2>
 		<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 			{posts.map((item) => (
 				<FoodCard key={item.id || item.post_id} item={item} />
 			))}
 		</div>
+		</>
 	);
 }
