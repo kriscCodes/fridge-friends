@@ -15,10 +15,20 @@ export default function About() {
 						Fridge Friends is a revolutionary app that helps you manage and
 						share your fridge contents with friends and family.
 					</p>
-					<p className="text-lg text-gray-600">
+					<p className="text-lg text-gray-600 mb-8">
 						Never wonder what is in your fridge again, and easily coordinate
 						grocery shopping with your roommates!
 					</p>
+					<div className="w-full flex justify-center">
+						<iframe
+							className="w-[360px] h-[640px] rounded-lg shadow-lg"
+							src="https://www.youtube.com/embed/e7hbfb9_fp8"
+							title="Fridge Friends Demo"
+							frameBorder="0"
+							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+							allowFullScreen
+						></iframe>
+					</div>
 				</div>
 			</main>
 		</>
