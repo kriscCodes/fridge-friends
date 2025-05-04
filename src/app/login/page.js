@@ -16,7 +16,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState(null)
-  const router = useRouter()
+  const router = useRouter() 
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -122,7 +122,7 @@ export default function LoginPage() {
               textShadow: "1px 1px 0px #000",
             }}
           >
-            Don't have an account?{" "}
+            Don&pos;t have an account?{" "}
             <a href="/register" className="underline hover:text-yellow-300">
               Sign Up
             </a>
