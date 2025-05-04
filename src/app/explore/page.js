@@ -2,6 +2,9 @@
 
 import Image from 'next/image';
 import FoodGrid from '@/components/FoodGrid';
+import FoodGridAll from '@/components/FoodGridAll';
+import { PixelButton } from '@/components/PixelButton';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const tabButtons = [
@@ -43,13 +46,11 @@ export default function Explore() {
 						href={btn.href}
 						className="flex flex-col items-center"
 					>
-						<Image
+						<PixelButton
 							src={btn.img}
 							alt={btn.label}
-							width={64}
-							height={64}
-							className="object-contain w-[64px] h-[64px]"
-							style={{ background: 'transparent' }}
+							width={100}
+							height={100}
 						/>
 						<span className="text-white font-bold text-lg drop-shadow-md mt-1">
 							{btn.label}
@@ -69,14 +70,7 @@ export default function Explore() {
 						href={btn.href}
 						className="flex flex-col items-center mx-2"
 					>
-						<Image
-							src={btn.img}
-							alt={btn.label}
-							width={40}
-							height={40}
-							className="object-contain w-[40px] h-[40px]"
-							style={{ background: 'transparent' }}
-						/>
+						<PixelButton src={btn.img} alt={btn.label} width={40} height={40} />
 						<span
 							className="text-black font-bold text-xs mt-0.5"
 							style={{ fontFamily: 'monospace', letterSpacing: '0.05em' }}
@@ -90,7 +84,7 @@ export default function Explore() {
 			{/* Main Content with Tabs */}
 			<main className="relative z-10 max-w-6xl mx-auto pt-24 md:pt-8 pb-16 px-4">
 				<Tabs defaultValue="all" className="w-full">
-					<TabsList className="grid grid-cols-3 grid-rows-2 gap-2 gap-y-3 mb-8 bg-transparent border-none shadow-none md:flex md:flex-row md:flex-wrap md:justify-center">
+					<TabsList className="flex flex-row flex-wrap justify-center gap-2 mb-8 bg-transparent border-none shadow-none">
 						{tabButtons.map((tab) => (
 							<TabsTrigger
 								key={tab.label}
@@ -98,7 +92,7 @@ export default function Explore() {
 								className="group bg-transparent border-none shadow-none p-0 focus:ring-0 focus:outline-none transition-transform data-[state=active]:bg-transparent"
 								style={{ background: 'transparent' }}
 							>
-								<span className="inline-flex items-center justify-center w-full h-full min-w-[100px] min-h-[36px] bg-white/0 overflow-hidden">
+								<span className="inline-flex items-center justify-center w-[120px] h-[40px] bg-white/0 rounded-lg overflow-hidden">
 									<Image
 										src={tab.img}
 										alt={tab.label}
@@ -114,20 +108,8 @@ export default function Explore() {
 					<TabsContent value="all" className="mt-0">
 						<FoodGrid />
 					</TabsContent>
-					<TabsContent value="fruits" className="mt-0">
-						<FoodGrid category="fruits" />
-					</TabsContent>
-					<TabsContent value="vegetables" className="mt-0">
-						<FoodGrid category="vegetables" />
-					</TabsContent>
-					<TabsContent value="grains" className="mt-0">
-						<FoodGrid category="grains" />
-					</TabsContent>
-					<TabsContent value="dairy" className="mt-0">
-						<FoodGrid category="dairy" />
-					</TabsContent>
-					<TabsContent value="protein" className="mt-0">
-						<FoodGrid category="protein" />
+					<TabsContent value="all" className="mt-0">
+						<FoodGridAll />
 					</TabsContent>
 				</Tabs>
 			</main>
