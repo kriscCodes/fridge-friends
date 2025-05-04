@@ -15,12 +15,12 @@ export default function FoodGrid({ category }) {
 			let query = supabase
 				.from('barter_posts')
 				.select(`
-					*,
-					profiles (
-						username
-					)
-				`)
-				
+	*,
+	profiles (
+		username
+	)
+`)
+
 				.order('created_at', { ascending: false });
 
 			// Filter by category if provided

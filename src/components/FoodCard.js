@@ -58,7 +58,7 @@ export function FoodCard({ item }) {
 						{item.description}
 					</p>
 					<p className="text-sm mt-2 font-medium">
-					From: {item.profile?.username || 'Unknown'}
+					From: {item.profiles?.username || 'Unknown'}
 					</p>
 
 				</CardContent>
