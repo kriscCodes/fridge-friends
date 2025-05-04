@@ -28,6 +28,7 @@ const sidebarButtons = [
 
 export default function Explore() {
 	return (
+		
 		<div className="relative min-h-screen w-full overflow-x-hidden">
 			{/* Background */}
 			<Image
@@ -63,25 +64,7 @@ export default function Explore() {
 			{/* Main Content with Tabs */}
 			<main className="relative z-10 max-w-6xl mx-auto pt-8 pb-16 px-4">
 				<Tabs defaultValue="all" className="w-full">
-				<TabsList className="flex flex-row flex-wrap justify-center gap-2 mb-8 bg-transparent border-none shadow-none">
-  {tabButtons.map((tab) => (
-    <TabsTrigger
-      key={tab.label}
-      value={tab.label}
-      className="group bg-transparent border-none shadow-none p-0 focus:ring-0 focus:outline-none transition-transform data-[state=active]:bg-transparent"
-      style={{ background: 'transparent' }}
-    >
-      <span className="inline-flex items-center justify-center w-[120px] h-[40px] rounded-lg overflow-hidden">
-        <PixelButton
-          src={tab.img}
-          alt={tab.label}
-          width={120}
-          height={40}
-        />
-      </span>
-    </TabsTrigger>
-  ))}
-</TabsList>
+				
 
 					<TabsContent value="all" className="mt-0">
 						<FoodGrid />
