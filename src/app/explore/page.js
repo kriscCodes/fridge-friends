@@ -16,7 +16,7 @@ const tabButtons = [
 const sidebarButtons = [
 	{
 		label: 'Create Listing',
-		img: '/images/Newbarterbutton.png',
+		img: '/images/PlusIcon_Centered.png',
 		href: '/profile',
 	},
 	{ label: 'Profile', img: '/images/Profilebutton.png', href: '/profile' },
@@ -46,13 +46,9 @@ export default function Explore() {
 						<Image
 							src={btn.img}
 							alt={btn.label}
-							width={btn.label === 'Create Listing' ? 80 : 64}
-							height={btn.label === 'Create Listing' ? 80 : 64}
-							className={`object-contain ${
-								btn.label === 'Create Listing'
-									? 'w-[80px] h-[80px]'
-									: 'w-[64px] h-[64px]'
-							}`}
+							width={64}
+							height={64}
+							className="object-contain w-[64px] h-[64px]"
 							style={{ background: 'transparent' }}
 						/>
 						<span className="text-white font-bold text-lg drop-shadow-md mt-1">
