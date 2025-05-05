@@ -17,20 +17,19 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("")
   const [username, setUsername] = useState("")
   const [error, setError] = useState(null)
+  const [success, setSuccess] = useState("")
   const router = useRouter()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError(null)
 
-    // First, create the auth user
+    // Create the auth user
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: {
-          username,
-        },
+        data: { username },
       },
     })
 
@@ -39,7 +38,7 @@ export default function RegisterPage() {
       return
     }
 
-    // Then create the profile
+    // Create user profile in the "profiles" table
     const { error: profileError } = await supabase.from("profiles").insert({
       id: authData.user.id,
       username,
@@ -51,8 +50,8 @@ export default function RegisterPage() {
       return
     }
 
-    // If everything is successful, redirect to explore
-    router.push("/explore")
+    // Show success message
+    setSuccess("Check your email to confirm your account.")
   }
 
   return (
@@ -72,8 +71,11 @@ export default function RegisterPage() {
       {/* Signup Form Container */}
       <div className="relative z-10 w-full max-w-md px-4">
         <form onSubmit={handleSubmit} className="flex flex-col items-center">
+          {/* Error Message */}
           {error && (
-            <div className="bg-red-100 border-2 border-red-400 text-red-700 px-4 py-3 rounded mb-4 w-full">{error}</div>
+            <div className="bg-red-100 border-2 border-red-400 text-red-700 px-4 py-3 rounded mb-4 w-full">
+              {error}
+            </div>
           )}
 
           {/* Username Field */}
@@ -87,7 +89,6 @@ export default function RegisterPage() {
             >
               Username :
             </div>
-
             <input
               id="username"
               name="username"
@@ -154,13 +155,20 @@ export default function RegisterPage() {
 
           {/* Sign Up Button */}
           <PixelButton 
-  src="/images/SIGNUPButton.png" 
-  alt="Sign Up" 
-  width={250}  
-  height={100}  
-  onClick={handleSubmit} 
-/>
+            src="/images/SIGNUPButton.png" 
+            alt="Sign Up" 
+            width={250}  
+            height={100}  
+            type="submit"
+          />
         </form>
+
+        {/* Success Message */}
+        {success && (
+          <div className="bg-green-100 border-2 border-green-400 text-green-700 px-4 py-3 rounded mt-4 w-full text-center">
+            {success}
+          </div>
+        )}
       </div>
     </div>
   )
