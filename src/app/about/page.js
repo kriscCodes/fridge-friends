@@ -9,21 +9,22 @@ export default function About() {
 			<main className="min-h-screen flex flex-col items-center justify-center p-24">
 				<div className="text-center">
 					<h1 className="text-4xl font-bold mb-6 text-blue-600">
-						About Fridge Friends
+						About CampusCart
 					</h1>
 					<p className="text-xl text-gray-600 mb-8">
-						Fridge Friends is a revolutionary app that helps you manage and
-						share your fridge contents with friends and family.
+						Campus Cart is an app that lets CUNY students trade, sell, or donate
+						items like furniture, clothes, and supplies within a trusted campus
+						community.
 					</p>
 					<p className="text-lg text-gray-600 mb-8">
-						Never wonder what is in your fridge again, and easily coordinate
-						grocery shopping with your roommates!
+						Find what you need, give what you don’t—trade, sell, or donate with
+						fellow CUNY students near you!
 					</p>
 					<div className="w-full flex justify-center">
 						<iframe
 							className="w-[360px] h-[640px] rounded-lg shadow-lg"
 							src="https://www.youtube.com/embed/e7hbfb9_fp8"
-							title="Fridge Friends Demo"
+							title="CampusCart Demo"
 							frameBorder="0"
 							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 							allowFullScreen

@@ -49,11 +49,34 @@ export default function RequestsPage() {
 							.eq('id', request.from_user_id)
 							.single();
 
+						// Get public URLs for images
+						let postImageUrl = null;
+						let offerImageUrl = null;
+
+						if (request.barter_posts?.image_url) {
+							const { data: postImageData } = supabase.storage
+								.from('barter-images')
+								.getPublicUrl(request.barter_posts.image_url);
+							postImageUrl = postImageData.publicUrl;
+						}
+
+						if (request.offer_image) {
+							const { data: offerImageData } = supabase.storage
+								.from('offer-images')
+								.getPublicUrl(request.offer_image);
+							offerImageUrl = offerImageData.publicUrl;
+						}
+
 						return {
 							...request,
 							from_user: {
 								username: userData?.username || 'Unknown User',
 							},
+							barter_posts: {
+								...request.barter_posts,
+								image: postImageUrl,
+							},
+							offer_image: offerImageUrl,
 						};
 					})
 				);
@@ -88,16 +111,10 @@ export default function RequestsPage() {
 			// If accepted, update the post status
 			if (action === 'accepted') {
 				const request = requests.find((r) => r.id === requestId);
-				console.log('DEBUG post object:', request);
-				console.log(
-					'DEBUG post_id used for insert:',
-					request.post_id,
-					request.post_id
-				);
 				await supabase
 					.from('barter_posts')
 					.update({ status: 'completed' })
-					.eq('id', request.post_id || request.post_id);
+					.eq('id', request.post_id);
 			}
 		} catch (err) {
 			setError(err.message);
@@ -138,10 +155,20 @@ export default function RequestsPage() {
 					imageRendering: 'pixelated',
 				}}
 			>
-				<h1 className="text-2xl font-bold mb-6">Barter Requests</h1>
+				<h1
+					className="text-2xl font-bold mb-6 text-white"
+					style={{ fontFamily: 'monospace', textShadow: '2px 2px 0px #000' }}
+				>
+					Barter Requests
+				</h1>
 
 				{requests.length === 0 ? (
-					<p>No pending requests</p>
+					<p
+						className="text-white text-xl font-bold"
+						style={{ fontFamily: 'monospace', textShadow: '2px 2px 0px #000' }}
+					>
+						No pending requests
+					</p>
 				) : (
 					<div className="grid gap-8">
 						{requests.map((request) => (
@@ -161,9 +188,7 @@ export default function RequestsPage() {
 												{request.barter_posts.name}
 											</h3>
 											<p className="text-sm text-gray-500">
-												From:{' '}
-												{request.from_user.raw_user_meta_data?.username ||
-													'Unknown User'}
+												From: {request.from_user.username}
 											</p>
 										</div>
 										<Badge
@@ -192,6 +217,7 @@ export default function RequestsPage() {
 														alt={request.offer_name}
 														fill
 														className="object-cover rounded"
+														style={{ imageRendering: 'pixelated' }}
 													/>
 												</div>
 											)}
@@ -209,6 +235,7 @@ export default function RequestsPage() {
 														alt={request.barter_posts.name}
 														fill
 														className="object-cover rounded"
+														style={{ imageRendering: 'pixelated' }}
 													/>
 												</div>
 											)}

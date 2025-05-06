@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import heic2any from 'heic2any';
 
 export default function BarterRequestModal({ isOpen, onClose, post }) {
 	const [offerName, setOfferName] = useState('');
@@ -17,11 +18,39 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 	const [error, setError] = useState(null);
 	const router = useRouter();
 
-	const handleImageChange = (e) => {
+	const handleImageChange = async (e) => {
 		const file = e.target.files[0];
-		if (file) {
-			setOfferImage(file);
-			setImagePreview(URL.createObjectURL(file));
+		if (!file) return;
+
+		try {
+			// Check if the file is HEIC
+			if (
+				file.type === 'image/heic' ||
+				file.name.toLowerCase().endsWith('.heic')
+			) {
+				// Convert HEIC to JPEG
+				const convertedBlob = await heic2any({
+					blob: file,
+					toType: 'image/jpeg',
+					quality: 0.8,
+				});
+
+				// Create a new File object from the converted blob
+				const convertedFile = new File(
+					[convertedBlob],
+					file.name.replace(/\.heic$/i, '.jpg'),
+					{ type: 'image/jpeg' }
+				);
+
+				setOfferImage(convertedFile);
+				setImagePreview(URL.createObjectURL(convertedFile));
+			} else {
+				setOfferImage(file);
+				setImagePreview(URL.createObjectURL(file));
+			}
+		} catch (error) {
+			console.error('Error converting image:', error);
+			setError('Failed to process image. Please try a different file.');
 		}
 	};
 
@@ -98,45 +127,55 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 	if (!isOpen) return null;
 
 	return (
-		<div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-			<div
-				className="bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] w-full max-w-lg"
-				style={{ borderRadius: 0, imageRendering: 'pixelated' }}
-			>
+		<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+			<div className="bg-white border-4 border-black p-6 max-w-2xl w-full mx-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
 				<h2
-					className="text-2xl font-bold mb-4 text-center font-mono uppercase tracking-widest"
-					style={{ textShadow: '2px 2px 0px #000' }}
+					className="text-2xl font-bold mb-4 uppercase"
+					style={{ fontFamily: 'monospace', letterSpacing: '1px' }}
 				>
-					MAKE A BARTER OFFER
+					Make a Barter Offer
 				</h2>
-				<form onSubmit={handleSubmit} className="space-y-2">
+
+				{error && (
+					<div className="mb-4 p-3 bg-red-100 border-2 border-red-500 text-red-700 rounded">
+						{error}
+					</div>
+				)}
+
+				<form onSubmit={handleSubmit} className="space-y-4">
 					<div>
-						<label className="block text-xs font-bold mb-1 font-mono uppercase tracking-widest">
-							WHAT ARE YOU OFFERING?
+						<label
+							className="block text-sm font-bold mb-1 uppercase"
+							style={{ fontFamily: 'monospace' }}
+						>
+							What are you offering?
 						</label>
-						<input
+						<Input
 							type="text"
 							value={offerName}
 							onChange={(e) => setOfferName(e.target.value)}
-							placeholder="E.G. FRESH BASIL, HOMEMADE BREAD..."
 							required
-							className="w-full px-2 py-1 border-4 border-black font-mono text-sm uppercase tracking-widest focus:outline-none"
-							style={{ borderRadius: 0 }}
+							className="w-full"
+							style={{ fontFamily: 'monospace' }}
 						/>
 					</div>
+
 					<div>
-						<label className="block text-xs font-bold mb-1 font-mono uppercase tracking-widest">
-							DESCRIPTION
+						<label
+							className="block text-sm font-bold mb-1 uppercase"
+							style={{ fontFamily: 'monospace' }}
+						>
+							Description
 						</label>
-						<textarea
+						<Textarea
 							value={offerDescription}
 							onChange={(e) => setOfferDescription(e.target.value)}
-							placeholder="TELL US MORE ABOUT YOUR OFFER..."
 							required
-							className="w-full px-2 py-1 border-4 border-black font-mono text-sm uppercase tracking-widest focus:outline-none min-h-[60px]"
-							style={{ borderRadius: 0 }}
+							className="w-full"
+							style={{ fontFamily: 'monospace' }}
 						/>
 					</div>
+
 					<div>
 						<label className="block text-xs font-bold mb-1 font-mono uppercase tracking-widest">
 							IMAGE (OPTIONAL)
