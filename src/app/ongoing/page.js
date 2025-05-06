@@ -231,16 +231,21 @@ export default function OngoingBartersPage() {
 								</p>
 							) : (
 								barters.map((barter) => (
-									<Card
+									<div
 										key={barter.id}
-										className={`cursor-pointer transition-all hover:shadow-lg ${
+										className={`bg-white border-4 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex flex-col gap-2 items-stretch cursor-pointer ${
 											selectedBarter?.id === barter.id
 												? 'ring-2 ring-blue-500'
 												: ''
 										}`}
+										style={{
+											imageRendering: 'pixelated',
+											minWidth: 280,
+											maxWidth: 340,
+										}}
 										onClick={() => setSelectedBarter(barter)}
 									>
-										<CardHeader>
+										<div className="bg-gray-50 p-4">
 											<div className="flex justify-between items-start">
 												<div>
 													<h3 className="font-semibold">
@@ -254,8 +259,8 @@ export default function OngoingBartersPage() {
 													</p>
 												</div>
 											</div>
-										</CardHeader>
-										<CardContent>
+										</div>
+										<div className="p-4">
 											<div className="grid grid-cols-2 gap-4">
 												<div>
 													<h4 className="font-medium mb-2">Their Offer:</h4>
@@ -288,8 +293,8 @@ export default function OngoingBartersPage() {
 													)}
 												</div>
 											</div>
-										</CardContent>
-									</Card>
+										</div>
+									</div>
 								))
 							)}
 						</div>

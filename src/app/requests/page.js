@@ -181,7 +181,7 @@ export default function RequestsPage() {
 									maxWidth: 340,
 								}}
 							>
-								<CardHeader className="bg-gray-50 p-4">
+								<div className="bg-gray-50 p-4">
 									<div className="flex justify-between items-start">
 										<div>
 											<h3 className="font-semibold">
@@ -192,17 +192,17 @@ export default function RequestsPage() {
 											</p>
 										</div>
 										<Badge
-											className={`
-												${request.status === 'pending' ? 'bg-yellow-500' : ''}
+											className={`${
+												request.status === 'pending' ? 'bg-yellow-500' : ''
+											}
 												${request.status === 'accepted' ? 'bg-green-500' : ''}
-												${request.status === 'rejected' ? 'bg-red-500' : ''}
-											`}
+												${request.status === 'rejected' ? 'bg-red-500' : ''}`}
 										>
 											{request.status}
 										</Badge>
 									</div>
-								</CardHeader>
-								<CardContent className="p-4">
+								</div>
+								<div className="p-4">
 									<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 										<div>
 											<h4 className="font-medium mb-2">Their Offer:</h4>
@@ -243,24 +243,33 @@ export default function RequestsPage() {
 									</div>
 									{request.status === 'pending' && (
 										<div className="flex gap-2 mt-4">
-											<Button
-												variant="outline"
-												onClick={() =>
-													handleRequestAction(request.id, 'rejected')
-												}
-											>
-												Reject
-											</Button>
-											<Button
+											<button
 												onClick={() =>
 													handleRequestAction(request.id, 'accepted')
 												}
+												className="px-4 py-2 bg-green-600 text-white font-mono font-bold uppercase border-4 border-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:outline-none transition-all hover:bg-green-700"
+												style={{
+													letterSpacing: '0.08em',
+													imageRendering: 'pixelated',
+												}}
 											>
 												Accept
-											</Button>
+											</button>
+											<button
+												onClick={() =>
+													handleRequestAction(request.id, 'rejected')
+												}
+												className="px-4 py-2 bg-red-600 text-white font-mono font-bold uppercase border-4 border-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:outline-none transition-all hover:bg-red-700"
+												style={{
+													letterSpacing: '0.08em',
+													imageRendering: 'pixelated',
+												}}
+											>
+												Reject
+											</button>
 										</div>
 									)}
-								</CardContent>
+								</div>
 							</div>
 						))}
 					</div>

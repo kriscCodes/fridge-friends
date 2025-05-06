@@ -48,8 +48,6 @@ export default function Home() {
 				</Link>
 			</div>
 
-
-
 			{/* Centered content */}
 			<div className="relative z-10 flex flex-col items-center justify-center min-h-screen">
 				<div className="flex flex-row items-center justify-center gap-4 mb-4">
@@ -67,7 +65,7 @@ export default function Home() {
 							textShadow: '4px 4px 0 #000, 2px 2px 0 #000, 0px 0px 8px #000',
 						}}
 					>
-						Fridge <br /> Friends
+						CampusCart
 					</h1>
 					<img
 						src="/images/Apple.png"
