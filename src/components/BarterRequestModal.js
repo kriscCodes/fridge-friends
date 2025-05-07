@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import heic2any from 'heic2any';
 
 export default function BarterRequestModal({ isOpen, onClose, post }) {
 	const [offerName, setOfferName] = useState('');
@@ -28,6 +27,9 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 				file.type === 'image/heic' ||
 				file.name.toLowerCase().endsWith('.heic')
 			) {
+				// Dynamically import heic2any only when needed
+				const heic2any = (await import('heic2any')).default;
+				
 				// Convert HEIC to JPEG
 				const convertedBlob = await heic2any({
 					blob: file,
