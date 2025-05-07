@@ -12,6 +12,12 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handlePostCreated = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
+
 
   const handlePost = async ({ title, description }) => {
     console.log("Creating post:", title, description)
@@ -130,7 +136,7 @@ export default function ProfilePage() {
           </div>
 
           <div className="bg-transparent">
-            <UserBarterPosts />
+            <UserBarterPosts key={refreshKey}/>
           </div>
 
           <div className="flex justify-center mt-8">
@@ -144,7 +150,12 @@ export default function ProfilePage() {
         </div>
       </main>
 
-      <BarterPostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <BarterPostModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onPostCreated={handlePostCreated}
+      />
+
     </>
   )
 }

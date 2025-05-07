@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import heic2any from 'heic2any';
 
-export default function BarterPostModal({ isOpen, onClose }) {
+export default function BarterPostModal({ isOpen, onClose, onPostCreated }) {
 	const [title, setTitle] = useState('');
 	const [description, setDescription] = useState('');
 	const [type, setType] = useState('');
@@ -119,14 +119,15 @@ export default function BarterPostModal({ isOpen, onClose }) {
 		});
 
 		if (insertError) {
-			setError(insertError.message);
-		} else {
-			setSuccess('Post created successfully!');
-			setTimeout(() => {
-				router.refresh();
-				onClose();
-			}, 300);
-		}
+      setError(insertError.message);
+    } else {
+      setSuccess('Post created successfully!');
+      setTimeout(() => {
+        if (onPostCreated) onPostCreated();
+        onClose();
+      }, 300);
+    }
+    
 	};
 
 	if (!isOpen) return null;

@@ -1,9 +1,9 @@
 "use client"
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase"
-import UserBarterPost from "./UserBarterPost" // 👈 import the new component
+import UserBarterPost from "./UserBarterPost" 
 
-export default function UserBarterPosts({ limit = 5 }) {
+export default function UserBarterPosts({ limit = 5, refreshTrigger }) {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -38,7 +38,7 @@ export default function UserBarterPosts({ limit = 5 }) {
     }
 
     fetchUserPosts()
-  }, [limit])
+  }, [limit, refreshTrigger])
 
   if (loading)
     return (
