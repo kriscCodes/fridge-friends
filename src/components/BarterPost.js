@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
-import heic2any from 'heic2any';
 
 export default function BarterPostModal({ isOpen, onClose, onPostCreated }) {
 	const [title, setTitle] = useState('');
@@ -42,6 +41,8 @@ export default function BarterPostModal({ isOpen, onClose, onPostCreated }) {
 				file.type === 'image/heic' ||
 				file.name.toLowerCase().endsWith('.heic')
 			) {
+				// Dynamically import heic2any only when needed
+				const heic2any = (await import('heic2any')).default;
 				// Convert HEIC to JPEG
 				const convertedBlob = await heic2any({
 					blob: file,
@@ -87,9 +88,18 @@ export default function BarterPostModal({ isOpen, onClose, onPostCreated }) {
 
 			if (imageFile) {
 				const fileExt = imageFile.name.split('.').pop();
-				const fileName = `${
-					self.crypto?.randomUUID?.() || Date.now()
-				}.${fileExt}`;
+				// Generate a UUID in a client-safe way
+				let uuid = '';
+				if (
+					typeof window !== 'undefined' &&
+					window.crypto &&
+					window.crypto.randomUUID
+				) {
+					uuid = window.crypto.randomUUID();
+				} else {
+					uuid = `${Date.now()}-${Math.floor(Math.random() * 1e9)}`;
+				}
+				const fileName = `${uuid}.${fileExt}`;
 
 				console.log('Uploading image:', fileName, imageFile);
 
@@ -109,17 +119,19 @@ export default function BarterPostModal({ isOpen, onClose, onPostCreated }) {
 				imageFileName = fileName;
 			}
 
-			const { error: insertError } = await supabase.from('barter_posts').insert({
-				user_id: user.id,
-				name: title,
-				description,
-				type,
-				deadline,
-				barter_type: 'direct',
-				image_url: imageFileName,
-				latitude,
-				longitude,
-			});
+			const { error: insertError } = await supabase
+				.from('barter_posts')
+				.insert({
+					user_id: user.id,
+					name: title,
+					description,
+					type,
+					deadline,
+					barter_type: 'direct',
+					image_url: imageFileName,
+					latitude,
+					longitude,
+				});
 
 			if (insertError) {
 				setError(insertError.message);
@@ -179,7 +191,10 @@ export default function BarterPostModal({ isOpen, onClose, onPostCreated }) {
 					<div className="fixed inset-0 bg-black bg-opacity-90 z-[100] flex items-center justify-center">
 						<div className="text-center">
 							<div className="animate-spin rounded-full h-16 w-16 border-4 border-white border-t-transparent mx-auto mb-4"></div>
-							<p className="text-white text-xl font-bold" style={{ fontFamily: 'monospace' }}>
+							<p
+								className="text-white text-xl font-bold"
+								style={{ fontFamily: 'monospace' }}
+							>
 								Uploading...
 							</p>
 						</div>
