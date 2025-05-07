@@ -332,7 +332,10 @@ export default function OngoingBartersPage() {
 											>
 												<p className="text-sm">{message.content}</p>
 												<p className="text-xs mt-1 opacity-70">
-													{new Date(message.created_at).toLocaleTimeString()}
+													{new Date(message.created_at).toLocaleTimeString([], {
+														hour: '2-digit',
+														minute: '2-digit',
+													})}
 												</p>
 											</div>
 										</div>
