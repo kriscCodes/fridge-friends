@@ -1,12 +1,15 @@
 'use client';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { Menu, X } from 'lucide-react';
 
 export default function Navbar() {
 	const router = useRouter();
+	const [isMenuOpen, setIsMenuOpen] = useState(false);
 
 	return (
 		<nav
-			className="w-full flex items-center justify-between py-3 px-6 border-b-4 border-black"
+			className="w-full flex items-center justify-between py-3 px-6 border-b-4 border-black relative"
 			style={{
 				backgroundColor: '#8B4513',
 				imageRendering: 'pixelated',
@@ -24,26 +27,45 @@ export default function Navbar() {
 				CampusCart
 			</div>
 
-			<div className="flex space-x-3">
+			{/* Mobile menu button */}
+			<button
+				onClick={() => setIsMenuOpen(!isMenuOpen)}
+				className="md:hidden text-white p-2"
+				aria-label="Toggle menu"
+			>
+				{isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+			</button>
+
+			{/* Navigation buttons - hidden on mobile unless menu is open */}
+			<div className={`${isMenuOpen ? 'flex' : 'hidden'} md:flex flex-col md:flex-row absolute md:relative top-full md:top-auto left-0 right-0 md:left-auto md:right-auto bg-[#8B4513] md:bg-transparent p-4 md:p-0 border-b-4 md:border-b-0 border-black md:space-x-3 space-y-3 md:space-y-0 z-50`}>
 				<button
-					onClick={() => router.push('/explore')}
-					className="bg-yellow-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-yellow-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+					onClick={() => {
+						router.push('/explore');
+						setIsMenuOpen(false);
+					}}
+					className="bg-yellow-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-yellow-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] w-full md:w-auto"
 					style={{ fontFamily: 'monospace' }}
 				>
 					Explore
 				</button>
 
 				<button
-					onClick={() => router.push('/requests')}
-					className="bg-green-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-green-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+					onClick={() => {
+						router.push('/requests');
+						setIsMenuOpen(false);
+					}}
+					className="bg-green-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-green-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] w-full md:w-auto"
 					style={{ fontFamily: 'monospace' }}
 				>
 					Offers
 				</button>
 
 				<button
-					onClick={() => router.push('/profile')}
-					className="bg-purple-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-purple-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+					onClick={() => {
+						router.push('/profile');
+						setIsMenuOpen(false);
+					}}
+					className="bg-purple-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-purple-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] w-full md:w-auto"
 					style={{ fontFamily: 'monospace' }}
 				>
 					Profile
