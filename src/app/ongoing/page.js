@@ -126,7 +126,19 @@ export default function OngoingBartersPage() {
 					filter: `barter_id=eq.${selectedBarter.id}`,
 				},
 				(payload) => {
-					setMessages((current) => [...current, payload.new]);
+					setMessages((current) => {
+						// Check for duplicate by created_at and content (or use a better unique key)
+						if (
+							current.some(
+								(msg) =>
+									msg.created_at === payload.new.created_at &&
+									msg.content === payload.new.content
+							)
+						) {
+							return current;
+						}
+						return [...current, payload.new];
+					});
 				}
 			)
 			.subscribe();
@@ -158,29 +170,17 @@ export default function OngoingBartersPage() {
 		e.preventDefault();
 		if (!newMessage.trim() || !selectedBarter || !currentUser) return;
 
-		// Optimistically add the message
-		const optimisticMessage = {
-			id: Date.now().toString(), // temporary id
-			barter_id: selectedBarter.id,
-			sender_id: currentUser.id,
-			content: newMessage.trim(),
-			created_at: new Date().toISOString(),
-		};
-		setMessages((prev) => [...prev, optimisticMessage]);
-		setNewMessage('');
-
 		try {
 			const { error } = await supabase.from('barter_messages').insert({
 				barter_id: selectedBarter.id,
 				sender_id: currentUser.id,
-				content: optimisticMessage.content,
+				content: newMessage.trim(),
 			});
 
 			if (error) throw error;
-			// Optionally: refetch or reconcile with the real-time event
+			setNewMessage('');
 		} catch (err) {
 			console.error('Error sending message:', err);
-			// Optionally: remove the optimistic message or show an error
 		}
 	};
 
