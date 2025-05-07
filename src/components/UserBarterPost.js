@@ -12,6 +12,7 @@ const jersey10 = Jersey_10({
 
 export default function UserBarterPost({ post, onDelete }) {
   const [imageUrl, setImageUrl] = useState(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     if (post.image_url) {
@@ -24,18 +25,37 @@ export default function UserBarterPost({ post, onDelete }) {
     const confirmed = confirm(`Are you sure you want to delete "${post.name}"?`)
     if (!confirmed) return
 
-    const { error } = await supabase
-      .from("barter_posts")
-      .delete()
-      .eq("post_id", post.post_id)
+    setIsDeleting(true)
+    try {
+      const { error } = await supabase
+        .from("barter_posts")
+        .delete()
+        .eq("post_id", post.post_id)
 
-    if (error) {
-      alert("Failed to delete post: " + error.message)
+      if (error) {
+        alert("Failed to delete post: " + error.message)
+        console.error(error)
+      } else {
+        if (onDelete) onDelete(post.post_id)
+        window.location.reload()
+      }
+    } catch (error) {
+      alert("An error occurred while deleting the post")
       console.error(error)
-    } else {
-      alert("Post deleted!")
-      if (onDelete) onDelete(post.post_id)
+    } finally {
+      setIsDeleting(false)
     }
+  }
+
+  if (isDeleting) {
+    return (
+      <div className="bg-white border-4 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center h-40">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-2"></div>
+          <p className="text-sm font-bold" style={{ fontFamily: "monospace" }}>Deleting...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
