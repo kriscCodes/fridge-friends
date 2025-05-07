@@ -65,7 +65,7 @@ export default function Home() {
 							textShadow: '4px 4px 0 #000, 2px 2px 0 #000, 0px 0px 8px #000',
 						}}
 					>
-						CampusCart
+						inFRIENDtory
 					</h1>
 					<img
 						src="/images/Apple.png"

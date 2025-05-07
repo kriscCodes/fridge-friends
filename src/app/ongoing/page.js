@@ -158,18 +158,29 @@ export default function OngoingBartersPage() {
 		e.preventDefault();
 		if (!newMessage.trim() || !selectedBarter || !currentUser) return;
 
+		// Optimistically add the message
+		const optimisticMessage = {
+			id: Date.now().toString(), // temporary id
+			barter_id: selectedBarter.id,
+			sender_id: currentUser.id,
+			content: newMessage.trim(),
+			created_at: new Date().toISOString(),
+		};
+		setMessages((prev) => [...prev, optimisticMessage]);
+		setNewMessage('');
+
 		try {
 			const { error } = await supabase.from('barter_messages').insert({
 				barter_id: selectedBarter.id,
 				sender_id: currentUser.id,
-				content: newMessage.trim(),
+				content: optimisticMessage.content,
 			});
 
 			if (error) throw error;
-
-			setNewMessage('');
+			// Optionally: refetch or reconcile with the real-time event
 		} catch (err) {
 			console.error('Error sending message:', err);
+			// Optionally: remove the optimistic message or show an error
 		}
 	};
 
@@ -345,4 +356,3 @@ export default function OngoingBartersPage() {
 		</>
 	);
 }
-// making an odd change
