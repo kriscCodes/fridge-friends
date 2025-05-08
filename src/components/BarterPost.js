@@ -16,6 +16,25 @@ export default function BarterPostModal({ isOpen, onClose, onPostCreated }) {
 	const [latitude, setLatitude] = useState(null);
 	const [longitude, setLongitude] = useState(null);
 
+	const handleDelete = async (postId) => {
+		try {
+			const { error } = await supabase
+				.from('barter_posts')
+				.delete()
+				.eq('id', postId);
+
+			if (error) {
+				setError('Failed to delete post');
+				return;
+			}
+
+			// Refresh the page after successful deletion
+			router.refresh();
+		} catch (error) {
+			setError('An unexpected error occurred while deleting');
+		}
+	};
+
 	// Get location when modal opens
 	useEffect(() => {
 		if (isOpen && navigator.geolocation) {
