@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { createPortal } from 'react-dom';
 
 export default function BarterRequestModal({ isOpen, onClose, post }) {
 	const [offerName, setOfferName] = useState('');
@@ -138,8 +139,8 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 
 	if (!isOpen) return null;
 
-	return (
-		<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100]">
+	const modalContent = (
+		<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[10000]">
 			<div className="bg-white border-4 border-black p-6 max-w-2xl w-full mx-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
 				<h2
 					className="text-2xl font-bold mb-4 uppercase"
@@ -273,4 +274,9 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 			</div>
 		</div>
 	);
+
+	if (typeof window !== 'undefined') {
+		return createPortal(modalContent, document.body);
+	}
+	return null;
 }
