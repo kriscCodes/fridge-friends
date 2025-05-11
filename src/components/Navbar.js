@@ -74,7 +74,7 @@ export default function Navbar() {
 					Explore
 				</button>
 
-				<button
+				{isAuthenticated &&  <button
 					onClick={() => {
 						router.push('/requests');
 						setIsMenuOpen(false);
@@ -83,7 +83,7 @@ export default function Navbar() {
 					style={{ fontFamily: 'monospace' }}
 				>
 					Offers
-				</button>
+				</button>}
 
 				{isAuthenticated && (
 					<button
@@ -98,7 +98,7 @@ export default function Navbar() {
 					</button>
 				)}
 
-				<button
+				{isAuthenticated &&  <button
 					onClick={() => {
 						router.push('/profile');
 						setIsMenuOpen(false);
@@ -107,7 +107,7 @@ export default function Navbar() {
 					style={{ fontFamily: 'monospace' }}
 				>
 					Profile
-				</button>
+				</button>}
 			</div>
 		</nav>
 	);
