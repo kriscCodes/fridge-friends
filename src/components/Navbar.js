@@ -35,16 +35,18 @@ export default function Navbar() {
 				boxShadow: '0 4px 0 rgba(0,0,0,0.5)',
 			}}
 		>
-			<div
-				className="font-bold text-2xl text-white"
+			<button
+				onClick={() => router.push('/')}
+				className="font-bold text-2xl text-white bg-transparent border-none p-0 m-0 cursor-pointer"
 				style={{
 					fontFamily: 'monospace',
 					textShadow: '2px 2px 0px #000',
 					letterSpacing: '1px',
 				}}
+				aria-label="Go to Home"
 			>
-				CampusCart
-			</div>
+				InFRIENDtory
+			</button>
 
 			{/* Mobile menu button */}
 			<button
