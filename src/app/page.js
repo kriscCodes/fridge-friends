@@ -62,7 +62,10 @@ export default function Home() {
 						className={`${jersey10.className} text-white text-7xl md:text-8xl font-extrabold px-4 text-center leading-none`}
 						style={{
 							WebkitTextStroke: '4px #000',
-							textShadow: '4px 4px 0 #000, 2px 2px 0 #000, 0px 0px 8px #000',
+							textShadow: '4px 4px 0 #000',
+							letterSpacing: '2px',
+							imageRendering: 'pixelated',
+							fontFamily: 'monospace',
 						}}
 					>
 						inFRIENDtory
