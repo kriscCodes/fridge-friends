@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { createPortal } from 'react-dom';
 
 export default function BarterRequestModal({ isOpen, onClose, post }) {
 	const [offerName, setOfferName] = useState('');
@@ -15,7 +16,17 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 	const [imagePreview, setImagePreview] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
+	const [postImageUrl, setPostImageUrl] = useState(null);
 	const router = useRouter();
+
+	useEffect(() => {
+		if (post?.image_url) {
+			const { data } = supabase.storage
+				.from('barter-images')
+				.getPublicUrl(post.image_url);
+			setPostImageUrl(data.publicUrl);
+		}
+	}, [post?.image_url]);
 
 	const handleImageChange = async (e) => {
 		const file = e.target.files[0];
@@ -128,8 +139,8 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 
 	if (!isOpen) return null;
 
-	return (
-		<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+	const modalContent = (
+		<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[10000]">
 			<div className="bg-white border-4 border-black p-6 max-w-2xl w-full mx-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
 				<h2
 					className="text-2xl font-bold mb-4 uppercase"
@@ -137,6 +148,35 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 				>
 					Make a Barter Offer
 				</h2>
+
+				{/* Post Details Section */}
+				<div className="mb-6 p-4 bg-gray-50 border-4 border-black rounded-lg">
+					<h3 className="text-xl font-bold mb-2 uppercase" style={{ fontFamily: 'monospace' }}>
+						Post Details
+					</h3>
+					<div className="space-y-2">
+						<div className="flex items-start gap-4">
+							{postImageUrl && (
+								<div className="relative w-32 h-32 flex-shrink-0 border-4 border-black">
+									<Image
+										src={postImageUrl}
+										alt={post.name}
+										fill
+										className="object-cover"
+										style={{ imageRendering: 'pixelated' }}
+									/>
+								</div>
+							)}
+							<div className="flex-1">
+								<p className="font-bold text-lg" style={{ fontFamily: 'monospace' }}>{post.name}</p>
+								<p className="text-sm text-gray-600" style={{ fontFamily: 'monospace' }}>Posted by: {post.profiles?.username || 'Unknown'}</p>
+								<p className="text-sm text-gray-600" style={{ fontFamily: 'monospace' }}>Type: {post.type}</p>
+								<p className="text-sm text-gray-600" style={{ fontFamily: 'monospace' }}>Deadline: {new Date(post.deadline).toLocaleDateString()}</p>
+								<p className="text-sm mt-2" style={{ fontFamily: 'monospace' }}>{post.description}</p>
+							</div>
+						</div>
+					</div>
+				</div>
 
 				{error && (
 					<div className="mb-4 p-3 bg-red-100 border-2 border-red-500 text-red-700 rounded">
@@ -234,4 +274,9 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 			</div>
 		</div>
 	);
+
+	if (typeof window !== 'undefined') {
+		return createPortal(modalContent, document.body);
+	}
+	return null;
 }

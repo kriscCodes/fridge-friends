@@ -28,7 +28,7 @@ export default function Navbar() {
 
 	return (
 		<nav
-			className="w-full flex items-center justify-between py-3 px-6 border-b-4 border-black relative"
+			className="w-full flex items-center justify-between py-3 px-6 border-b-4 border-black relative z-50"
 			style={{
 				backgroundColor: '#8B4513',
 				imageRendering: 'pixelated',
@@ -59,7 +59,7 @@ export default function Navbar() {
 			<div
 				className={`${
 					isMenuOpen ? 'flex' : 'hidden'
-				} md:flex flex-col md:flex-row absolute md:relative top-full md:top-auto left-0 right-0 md:left-auto md:right-auto bg-[#8B4513] md:bg-transparent p-4 md:p-0 border-b-4 md:border-b-0 border-black md:space-x-3 space-y-3 md:space-y-0 z-50`}
+				} md:flex flex-col md:flex-row absolute md:relative top-full md:top-auto left-0 right-0 md:left-auto md:right-auto bg-[#8B4513] md:bg-transparent p-4 md:p-0 border-b-4 md:border-b-0 border-black md:space-x-3 space-y-3 md:space-y-0 z-[9999]`}
 			>
 				<button
 					onClick={() => {

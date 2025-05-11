@@ -184,6 +184,26 @@ export default function OngoingBartersPage() {
 		}
 	};
 
+	const handleMarkComplete = async (barterId) => {
+		try {
+			const { error } = await supabase
+				.from('barter_requests')
+				.update({ status: 'completed' })
+				.eq('id', barterId);
+
+			if (error) throw error;
+
+			// Update local state
+			setBarters(
+				barters.map((barter) =>
+					barter.id === barterId ? { ...barter, status: 'completed' } : barter
+				)
+			);
+		} catch (err) {
+			setError(err.message);
+		}
+	};
+
 	if (loading) {
 		return (
 			<div
@@ -269,6 +289,23 @@ export default function OngoingBartersPage() {
 															: barter.from_user.username}
 													</p>
 												</div>
+												{barter.status === 'accepted' && (
+													<button
+														onClick={(e) => {
+															e.stopPropagation();
+															handleMarkComplete(barter.id);
+														}}
+														className="bg-green-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-green-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+														style={{ fontFamily: 'monospace' }}
+													>
+														Mark Complete
+													</button>
+												)}
+												{barter.status === 'completed' && (
+													<span className="bg-green-500 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase">
+														Completed
+													</span>
+												)}
 											</div>
 										</div>
 										<div className="p-4">
