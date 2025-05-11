@@ -146,7 +146,7 @@ export default function LoginPage() {
                 textShadow: "1px 1px 0px #000",
               }}
             >
-              Don&pos;t have an account?{" "}
+              Don't have an account?{" "}
               <a href="/register" className="underline hover:text-yellow-300">
                 Sign Up
               </a>
