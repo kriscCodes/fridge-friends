@@ -35,16 +35,18 @@ export default function Navbar() {
 				boxShadow: '0 4px 0 rgba(0,0,0,0.5)',
 			}}
 		>
-			<div
-				className="font-bold text-2xl text-white"
+			<button
+				onClick={() => router.push('/')}
+				className="font-bold text-2xl text-white bg-transparent border-none p-0 m-0 cursor-pointer"
 				style={{
 					fontFamily: 'monospace',
 					textShadow: '2px 2px 0px #000',
 					letterSpacing: '1px',
 				}}
+				aria-label="Go to Home"
 			>
-				inFRIENDtory
-			</div>
+				InFRIENDtory
+			</button>
 
 			{/* Mobile menu button */}
 			<button
@@ -72,16 +74,18 @@ export default function Navbar() {
 					Explore
 				</button>
 
-				<button
-					onClick={() => {
-						router.push('/requests');
-						setIsMenuOpen(false);
-					}}
-					className="bg-green-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-green-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] w-full md:w-auto"
-					style={{ fontFamily: 'monospace' }}
-				>
-					Offers
-				</button>
+				{isAuthenticated && (
+					<button
+						onClick={() => {
+							router.push('/requests');
+							setIsMenuOpen(false);
+						}}
+						className="bg-green-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-green-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] w-full md:w-auto"
+						style={{ fontFamily: 'monospace' }}
+					>
+						Offers
+					</button>
+				)}
 
 				{isAuthenticated && (
 					<button
@@ -96,16 +100,18 @@ export default function Navbar() {
 					</button>
 				)}
 
-				<button
-					onClick={() => {
-						router.push('/profile');
-						setIsMenuOpen(false);
-					}}
-					className="bg-purple-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-purple-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] w-full md:w-auto"
-					style={{ fontFamily: 'monospace' }}
-				>
-					Profile
-				</button>
+				{isAuthenticated && (
+					<button
+						onClick={() => {
+							router.push('/profile');
+							setIsMenuOpen(false);
+						}}
+						className="bg-purple-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-purple-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] w-full md:w-auto"
+						style={{ fontFamily: 'monospace' }}
+					>
+						Profile
+					</button>
+				)}
 			</div>
 		</nav>
 	);
