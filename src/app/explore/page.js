@@ -1,8 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import FoodGrid from '@/components/FoodGrid';
-import FoodGridAll from '@/components/FoodGridAll';
+import ItemGrid from '@/components/FoodGrid';
+import ItemGridAll from '@/components/FoodGridAll';
 import { PixelButton } from '@/components/PixelButton';
 import Navbar from '@/components/Navbar';
 
@@ -57,10 +57,10 @@ export default function Explore() {
 						))}
 					</TabsList>
 					<TabsContent value="all" className="mt-0">
-						<FoodGrid />
+						<ItemGrid />
 					</TabsContent>
 					<TabsContent value="all" className="mt-0">
-						<FoodGridAll />
+						<ItemGridAll />
 					</TabsContent>
 				</Tabs>
 			</main>

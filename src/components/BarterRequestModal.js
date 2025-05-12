@@ -40,7 +40,7 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 			) {
 				// Dynamically import heic2any only when needed
 				const heic2any = (await import('heic2any')).default;
-				
+
 				// Convert HEIC to JPEG
 				const convertedBlob = await heic2any({
 					blob: file,
@@ -151,7 +151,10 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 
 				{/* Post Details Section */}
 				<div className="mb-6 p-4 bg-gray-50 border-4 border-black rounded-lg">
-					<h3 className="text-xl font-bold mb-2 uppercase" style={{ fontFamily: 'monospace' }}>
+					<h3
+						className="text-xl font-bold mb-2 uppercase"
+						style={{ fontFamily: 'monospace' }}
+					>
 						Post Details
 					</h3>
 					<div className="space-y-2">
@@ -168,11 +171,33 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 								</div>
 							)}
 							<div className="flex-1">
-								<p className="font-bold text-lg" style={{ fontFamily: 'monospace' }}>{post.name}</p>
-								<p className="text-sm text-gray-600" style={{ fontFamily: 'monospace' }}>Posted by: {post.profiles?.username || 'Unknown'}</p>
-								<p className="text-sm text-gray-600" style={{ fontFamily: 'monospace' }}>Type: {post.type}</p>
-								<p className="text-sm text-gray-600" style={{ fontFamily: 'monospace' }}>Deadline: {new Date(post.deadline).toLocaleDateString()}</p>
-								<p className="text-sm mt-2" style={{ fontFamily: 'monospace' }}>{post.description}</p>
+								<p
+									className="font-bold text-lg"
+									style={{ fontFamily: 'monospace' }}
+								>
+									{post.name}
+								</p>
+								<p
+									className="text-sm text-gray-600"
+									style={{ fontFamily: 'monospace' }}
+								>
+									Posted by: {post.profiles?.username || 'Unknown'}
+								</p>
+								<p
+									className="text-sm text-gray-600"
+									style={{ fontFamily: 'monospace' }}
+								>
+									Type: {post.type}
+								</p>
+								<p
+									className="text-sm text-gray-600"
+									style={{ fontFamily: 'monospace' }}
+								>
+									Deadline: {new Date(post.deadline).toLocaleDateString()}
+								</p>
+								<p className="text-sm mt-2" style={{ fontFamily: 'monospace' }}>
+									{post.description}
+								</p>
 							</div>
 						</div>
 					</div>

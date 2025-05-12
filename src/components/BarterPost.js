@@ -2,12 +2,14 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function BarterPostModal({ isOpen, onClose, onPostCreated }) {
 	const [title, setTitle] = useState('');
 	const [description, setDescription] = useState('');
 	const [type, setType] = useState('');
 	const [deadline, setDeadline] = useState('');
+	const [price, setPrice] = useState('');
 	const [imageFile, setImageFile] = useState(null);
 	const [error, setError] = useState(null);
 	const [success, setSuccess] = useState(null);
@@ -146,7 +148,7 @@ export default function BarterPostModal({ isOpen, onClose, onPostCreated }) {
 					description,
 					type,
 					deadline,
-					barter_type: 'direct',
+					price: price ? parseFloat(price) : null,
 					image_url: imageFileName,
 					latitude,
 					longitude,
@@ -161,6 +163,7 @@ export default function BarterPostModal({ isOpen, onClose, onPostCreated }) {
 				setDescription('');
 				setType('');
 				setDeadline('');
+				setPrice('');
 				setImageFile(null);
 				// Close modal after success
 				setTimeout(() => {
@@ -182,6 +185,7 @@ export default function BarterPostModal({ isOpen, onClose, onPostCreated }) {
 			setDescription('');
 			setType('');
 			setDeadline('');
+			setPrice('');
 			setImageFile(null);
 			setError(null);
 			setSuccess(null);
@@ -275,11 +279,9 @@ export default function BarterPostModal({ isOpen, onClose, onPostCreated }) {
 									<option value="" disabled>
 										Select type
 									</option>
-									<option value="item">Fruits</option>
-									<option value="service">Vegetables</option>
-									<option value="other">Grains</option>
-									<option value="other">Dairy</option>
-									<option value="other">Protein</option>
+									<option value="clothes">Clothes</option>
+									<option value="furniture">Furniture</option>
+									<option value="supplies">Supplies</option>
 									<option value="other">Other</option>
 								</select>
 							</div>
@@ -318,6 +320,24 @@ export default function BarterPostModal({ isOpen, onClose, onPostCreated }) {
 									onChange={(e) => setDeadline(e.target.value)}
 									className="w-full p-3 rounded-lg border-4 border-black bg-white"
 									required
+									style={{ fontFamily: 'monospace' }}
+								/>
+							</div>
+							<div>
+								<label
+									className="block text-xl font-bold mb-2 text-black"
+									style={{
+										textShadow: '1px 1px 0 #fff',
+										fontFamily: 'monospace',
+									}}
+								>
+									Price (optional) :
+								</label>
+								<input
+									type="number"
+									value={price}
+									onChange={(e) => setPrice(e.target.value)}
+									className="w-full p-3 rounded-lg border-4 border-black bg-white"
 									style={{ fontFamily: 'monospace' }}
 								/>
 							</div>

@@ -9,16 +9,16 @@ export default function About() {
 			<main className="min-h-screen flex flex-col items-center justify-center p-24">
 				<div className="text-center">
 					<h1 className="text-4xl font-bold mb-6 text-blue-600">
-						About CampusCart
+						About inFRIENDtory
 					</h1>
 					<p className="text-xl text-gray-600 mb-8">
-						Campus Cart is an app that lets CUNY students trade, sell, or donate
-						items like furniture, clothes, and supplies within a trusted campus
-						community.
+						inFRIENDtory is an app that lets CUNY students trade, sell, or
+						donate items like furniture, clothes, and supplies within a trusted
+						campus community.
 					</p>
 					<p className="text-lg text-gray-600 mb-8">
-						Find what you need, give what you don’t—trade, sell, or donate with
-						fellow CUNY students near you!
+						Find what you need, give what you don&apos;t—trade, sell, or donate
+						with fellow CUNY students near you!
 					</p>
 					<div className="w-full flex justify-center">
 						<iframe

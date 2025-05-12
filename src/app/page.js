@@ -49,17 +49,18 @@ export default function Home() {
 			</div>
 
 			{/* Centered content */}
-			<div className="relative z-10 flex flex-col items-center justify-center min-h-screen">
-				<div className="flex flex-row items-center justify-center gap-4 mb-4">
+			<div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
+				<div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-4">
 					<img
 						src="/images/Avocado.png"
 						alt="Avocado"
-						width={180}
-						height={180}
+						width={120}
+						height={120}
+						className="w-[120px] h-[120px] md:w-[180px] md:h-[180px]"
 						style={{ imageRendering: 'pixelated' }}
 					/>
 					<h1
-						className={`${jersey10.className} text-white text-7xl md:text-8xl font-extrabold px-4 text-center leading-none`}
+						className={`${jersey10.className} text-white text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold text-center leading-tight md:leading-none`}
 						style={{
 							WebkitTextStroke: '4px #000',
 							textShadow: '4px 4px 0 #000',
@@ -68,13 +69,16 @@ export default function Home() {
 							fontFamily: 'monospace',
 						}}
 					>
-						inFRIENDtory
+						inFRIEND
+						<br className="hidden md:block" />
+						tory
 					</h1>
 					<img
 						src="/images/Apple.png"
 						alt="Apple"
-						width={180}
-						height={180}
+						width={120}
+						height={120}
+						className="w-[120px] h-[120px] md:w-[180px] md:h-[180px]"
 						style={{ imageRendering: 'pixelated' }}
 					/>
 				</div>
@@ -84,7 +88,7 @@ export default function Home() {
 						alt="Learn More"
 						width={220}
 						height={80}
-						className="mt-2"
+						className="mt-2 w-[180px] md:w-[220px]"
 						style={{ imageRendering: 'pixelated' }}
 					/>
 				</Link>

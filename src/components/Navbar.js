@@ -43,7 +43,7 @@ export default function Navbar() {
 					letterSpacing: '1px',
 				}}
 			>
-				CampusCart
+				inFRIENDtory
 			</div>
 
 			{/* Mobile menu button */}

@@ -16,11 +16,22 @@ function haversine(lat1, lon1, lat2, lon2) {
 	return R * c;
 }
 
-export default function FoodGrid({ category }) {
+export default function ItemGrid({ category }) {
 	const [posts, setPosts] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [userLocation, setUserLocation] = useState(null);
+	const [userId, setUserId] = useState(null);
+
+	useEffect(() => {
+		const fetchUser = async () => {
+			const {
+				data: { user },
+			} = await supabase.auth.getUser();
+			setUserId(user?.id || null);
+		};
+		fetchUser();
+	}, []);
 
 	useEffect(() => {
 		if (navigator.geolocation) {
@@ -42,21 +53,18 @@ export default function FoodGrid({ category }) {
 		const fetchPosts = async () => {
 			setLoading(true);
 
-			// Join the profiles table using Supabase's foreign key aliasing
 			let query = supabase
 				.from('barter_posts')
 				.select(
 					`
-	*,
-	profiles (
+	*
+	,profiles (
 		username
 	)
 `
 				)
-
 				.order('created_at', { ascending: false });
 
-			// Filter by category if provided
 			if (category) {
 				query = query.eq('category', category);
 			}
@@ -67,8 +75,11 @@ export default function FoodGrid({ category }) {
 				setError(error.message);
 			} else {
 				let filtered = data;
+				if (userId) {
+					filtered = filtered.filter((post) => post.user_id !== userId);
+				}
 				if (userLocation) {
-					filtered = data
+					filtered = filtered
 						.map((post) => {
 							if (post.latitude && post.longitude) {
 								const distance = haversine(
@@ -91,7 +102,7 @@ export default function FoodGrid({ category }) {
 		};
 
 		fetchPosts();
-	}, [category, userLocation]);
+	}, [category, userLocation, userId]);
 
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div className="text-red-500">{error}</div>;
@@ -99,17 +110,17 @@ export default function FoodGrid({ category }) {
 
 	return (
 		<>
-		<h2
-        className="text-2xl font-bold mb-4 text-white uppercase"
-        style={{ fontFamily: "monospace", textShadow: "2px 2px 0px #000" }}
-      >
-        NEARBY BARTER :
-      </h2>
-		<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-			{posts.map((item) => (
-				<FoodCard key={item.id || item.post_id} item={item} />
-			))}
-		</div>
+			<h2
+				className="text-2xl font-bold mb-4 text-white uppercase"
+				style={{ fontFamily: 'monospace', textShadow: '2px 2px 0px #000' }}
+			>
+				NEARBY BARTER :
+			</h2>
+			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+				{posts.map((item) => (
+					<FoodCard key={item.id || item.post_id} item={item} />
+				))}
+			</div>
 		</>
 	);
 }

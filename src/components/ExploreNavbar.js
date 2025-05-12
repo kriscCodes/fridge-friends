@@ -29,7 +29,7 @@ export default function ExploreNavbar() {
 							</Link>
 						</div>
 						<Button variant="outline" className="hidden sm:flex">
-							Share Your Food
+							Share Your Item
 						</Button>
 					</div>
 
