@@ -3,6 +3,8 @@ import { Jersey_10 } from 'next/font/google';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
+import QRCodeGenerator from './QRCodeGenerator';
+
 
 const jersey10 = Jersey_10({
 	subsets: ['latin'],
@@ -13,6 +15,7 @@ const jersey10 = Jersey_10({
 export default function UserBarterPost({ post, onDelete }) {
 	const [imageUrl, setImageUrl] = useState(null);
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [mode, setMode] = useState(null); 
 
 	useEffect(() => {
 		if (post.image_url) {
@@ -64,11 +67,17 @@ export default function UserBarterPost({ post, onDelete }) {
 		);
 	}
 
+
+	
+
 	return (
+
 		<div
 			className="bg-white border-4 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex flex-col gap-2"
 			style={{ imageRendering: 'pixelated' }}
 		>
+
+
 			{imageUrl && (
 				<div className="relative w-full h-40 overflow-hidden rounded-lg border-4 border-black">
 					<Image
@@ -115,6 +124,32 @@ export default function UserBarterPost({ post, onDelete }) {
 					</p>
 				)}
 			</div>
+
+			{!mode && (
+				<div style={{ marginTop: '0px' }}>
+					<button
+					onClick={() => setMode('generate')}
+					className="mt-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold border-2 border-black hover:bg-red-700 transition"
+					style={{ fontFamily: 'monospace' }}
+					>
+					     Complete Transaction   
+					</button>
+				</div>
+			)}
+
+			{mode === 'generate' && (
+				<div>
+					<button className="mt-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold border-2 border-black hover:bg-red-700 transition" style={{ fontFamily: 'monospace'  }} >
+						<QRCodeGenerator />
+					</button>
+					
+					<button onClick={() => setMode(null)} className="mt-2 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold border-2 border-black hover:bg-red-700 transition" style={{ fontFamily: 'monospace'  }}>
+						🔙 Back
+					</button>
+				</div>
+			)}
+
+
 
 			<button
 				onClick={handleDelete}
