@@ -52,7 +52,7 @@ export default function Home() {
 			<div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
 				<div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-4">
 					<img
-						src="/images/FavIcon.PNG"
+						src="/images/FavIcon.png"
 						alt="Avocado"
 						width={300}
 						height={300}
@@ -74,7 +74,7 @@ export default function Home() {
 						tory
 					</h1>
 					<img
-						src="/images/FavIcon.PNG"
+						src="/images/FavIcon.png"
 						alt="Apple"
 						width={500}
 						height={500}
