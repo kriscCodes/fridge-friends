@@ -109,6 +109,7 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 				offer_description: offerDescription,
 				offer_image: imageUrl,
 				status: 'pending',
+				trade_type: 'barter',
 			});
 
 			const { error: requestError, data: insertData } = await supabase
@@ -121,10 +122,17 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 					offer_description: offerDescription,
 					offer_image: imageUrl,
 					status: 'pending',
+					trade_type: 'barter',
 				});
 			console.log('insertData:', insertData, 'requestError:', requestError);
 
 			if (requestError) throw requestError;
+
+			// Clear form fields
+			setOfferName('');
+			setOfferDescription('');
+			setOfferImage(null);
+			setImagePreview(null);
 
 			// Close modal and refresh
 			onClose();
@@ -289,10 +297,11 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 						</button>
 						<button
 							type="submit"
-							className="px-4 py-2 bg-green-600 text-white font-mono font-bold uppercase border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:outline-none"
+							disabled={loading}
+							className="px-4 py-2 bg-green-600 text-white font-mono font-bold uppercase border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
 							style={{ borderRadius: 0, letterSpacing: '0.08em' }}
 						>
-							Submit
+							{loading ? 'Processing...' : 'Submit'}
 						</button>
 					</div>
 				</form>

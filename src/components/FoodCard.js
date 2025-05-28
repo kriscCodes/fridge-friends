@@ -5,9 +5,11 @@ import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import BarterRequestModal from './BarterRequestModal';
 import { useRouter } from 'next/navigation';
+import BuyConfirmationModal from './BuyConfirmationModal';
 
 export function FoodCard({ item }) {
-	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [isBarterModalOpen, setIsBarterModalOpen] = useState(false);
+	const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
 	const [imageUrl, setImageUrl] = useState(null);
 	const router = useRouter();
 	const [buyMessage, setBuyMessage] = useState(null);
@@ -21,29 +23,12 @@ export function FoodCard({ item }) {
 		}
 	}, [item.image_url]);
 
-	const handleBuy = async () => {
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		console.log('Buy clicked! User:', user, 'Item:', item);
-		if (!user) {
-			setBuyMessage('You must be logged in to buy.');
-			return;
-		}
-		const payload = {
-			post_id: item.id || item.post_id,
-			from_user_id: user.id,
-			to_user_id: item.user_id,
-			offer_name: 'Buy',
-			status: 'accepted',
-		};
-		console.log('Inserting barter_request:', payload);
-		const { error } = await supabase.from('barter_requests').insert(payload);
-		if (error) {
-			setBuyMessage('Error creating buy request: ' + error.message);
-		} else {
-			setBuyMessage('Purchase started! Check your ongoing barters.');
-		}
+	const handleBarter = () => {
+		setIsBarterModalOpen(true);
+	};
+
+	const handleBuy = () => {
+		setIsBuyModalOpen(true);
 	};
 
 	return (
@@ -87,7 +72,7 @@ export function FoodCard({ item }) {
 
 				<div className="flex flex-row gap-2 mt-2 items-center">
 					<button
-						onClick={() => setIsModalOpen(true)}
+						onClick={handleBarter}
 						className="flex justify-center items-center focus:outline-none border-none bg-transparent p-0 transition-transform hover:scale-105 active:scale-95"
 						aria-label="Barter for this item"
 						style={{ fontFamily: 'monospace', height: '28px' }}
@@ -140,8 +125,14 @@ export function FoodCard({ item }) {
 			</div>
 
 			<BarterRequestModal
-				isOpen={isModalOpen}
-				onClose={() => setIsModalOpen(false)}
+				isOpen={isBarterModalOpen}
+				onClose={() => setIsBarterModalOpen(false)}
+				post={item}
+			/>
+
+			<BuyConfirmationModal
+				isOpen={isBuyModalOpen}
+				onClose={() => setIsBuyModalOpen(false)}
 				post={item}
 			/>
 		</>
