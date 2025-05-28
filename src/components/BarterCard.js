@@ -63,20 +63,26 @@ export default function BarterCard({
                     </div>
                     {showStatus && (
                         barter.status === 'accepted' && showActions ? (
-                            <Button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    console.log('Mark Complete button clicked in BarterCard');
-                                    if (onMarkComplete) {
-                                        console.log('Calling onMarkComplete');
-                                        onMarkComplete(barter);
-                                    }
-                                }}
-                                className="bg-green-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-green-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
-                                style={{ fontFamily: 'monospace' }}
-                            >
-                                Mark Complete
-                            </Button>
+                            barter.requester_status || barter.poster_status ? (
+                                <span className="bg-yellow-500 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase">
+                                    Completion Pending
+                                </span>
+                            ) : (
+                                <Button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        console.log('Mark Complete button clicked in BarterCard');
+                                        if (onMarkComplete) {
+                                            console.log('Calling onMarkComplete');
+                                            onMarkComplete(barter);
+                                        }
+                                    }}
+                                    className="bg-green-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-green-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+                                    style={{ fontFamily: 'monospace' }}
+                                >
+                                    Mark Complete
+                                </Button>
+                            )
                         ) : (
                             <span className={`${
                                 barter.status === 'completed' 
