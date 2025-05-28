@@ -8,7 +8,7 @@ import useRequests from '@/hooks/useRequests';
 import RequestColumn from '@/components/RequestColumn';
 
 export default function RequestsPage() {
-	const { incomingRequests, outgoingRequests, loading, error, handleDeleteRequest, fetchRequests } = useRequests();
+	const { incomingRequests, outgoingRequests, loading, error, handleDeleteRequest, fetchRequests, handleRequestStatusChange } = useRequests();
 
 	if (error) {
 		return (
@@ -48,7 +48,7 @@ export default function RequestsPage() {
 								title="Incoming Requests"
 								requests={incomingRequests}
 								isIncoming={true}
-								onStatusChange={() => fetchRequests()}
+								onStatusChange={handleRequestStatusChange}
 							/>
 
 							{/* Outgoing Requests Column */}

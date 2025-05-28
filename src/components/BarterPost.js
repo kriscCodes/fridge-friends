@@ -3,6 +3,10 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { uploadPostImage } from '@/utils/imageUtils';
+import { POST_STATUS } from '@/constants/requestConstants';
 
 export default function BarterPostModal({ isOpen, onClose, onPostCreated }) {
 	const [title, setTitle] = useState('');
@@ -57,33 +61,9 @@ export default function BarterPostModal({ isOpen, onClose, onPostCreated }) {
 		if (!file) return;
 
 		try {
-			// Check if the file is HEIC
-			if (
-				file.type === 'image/heic' ||
-				file.name.toLowerCase().endsWith('.heic')
-			) {
-				// Dynamically import heic2any only when needed
-				const heic2any = (await import('heic2any')).default;
-				// Convert HEIC to JPEG
-				const convertedBlob = await heic2any({
-					blob: file,
-					toType: 'image/jpeg',
-					quality: 0.8,
-				});
-
-				// Create a new File object from the converted blob
-				const convertedFile = new File(
-					[convertedBlob],
-					file.name.replace(/\.heic$/i, '.jpg'),
-					{ type: 'image/jpeg' }
-				);
-
-				setImageFile(convertedFile);
-			} else {
-				setImageFile(file);
-			}
+			setImageFile(file);
 		} catch (error) {
-			console.error('Error converting image:', error);
+			console.error('Error processing image:', error);
 			setError('Failed to process image. Please try a different file.');
 		}
 	};
@@ -95,49 +75,16 @@ export default function BarterPostModal({ isOpen, onClose, onPostCreated }) {
 		setIsLoading(true);
 
 		try {
-			const {
-				data: { user },
-				error: userError,
-			} = await supabase.auth.getUser();
+			const { data: { user }, error: userError } = await supabase.auth.getUser();
 
 			if (userError || !user) {
 				setError('You must be logged in to post.');
 				return;
 			}
 
-			let imageFileName = null;
-
+			let imageUrl = null;
 			if (imageFile) {
-				const fileExt = imageFile.name.split('.').pop();
-				// Generate a UUID in a client-safe way
-				let uuid = '';
-				if (
-					typeof window !== 'undefined' &&
-					window.crypto &&
-					window.crypto.randomUUID
-				) {
-					uuid = window.crypto.randomUUID();
-				} else {
-					uuid = `${Date.now()}-${Math.floor(Math.random() * 1e9)}`;
-				}
-				const fileName = `${uuid}.${fileExt}`;
-
-				console.log('Uploading image:', fileName, imageFile);
-
-				const { data, error: storageError } = await supabase.storage
-					.from('barter-images')
-					.upload(fileName, imageFile, {
-						upsert: true,
-					});
-
-				if (storageError) {
-					console.error('Upload failed:', storageError);
-					setError('Image upload failed: ' + storageError.message);
-					return;
-				}
-
-				console.log('Upload success:', data);
-				imageFileName = fileName;
+				imageUrl = await uploadPostImage(imageFile);
 			}
 
 			const { error: insertError } = await supabase
@@ -149,30 +96,33 @@ export default function BarterPostModal({ isOpen, onClose, onPostCreated }) {
 					type,
 					deadline,
 					price: price ? parseFloat(price) : null,
-					image_url: imageFileName,
+					image_url: imageUrl,
 					latitude,
 					longitude,
+					status: POST_STATUS.ACTIVE
 				});
 
-			if (insertError) {
-				setError(insertError.message);
-			} else {
-				setSuccess('Post created successfully!');
-				// Reset all form values
-				setTitle('');
-				setDescription('');
-				setType('');
-				setDeadline('');
-				setPrice('');
-				setImageFile(null);
-				// Close modal after success
-				setTimeout(() => {
-					if (onPostCreated) onPostCreated();
-					onClose();
-				}, 1000); // Increased timeout to show success message
-			}
-		} catch (error) {
-			setError('An unexpected error occurred. Please try again.');
+			if (insertError) throw insertError;
+
+			// Clear form fields
+			setTitle('');
+			setDescription('');
+			setType('food');
+			setDeadline('');
+			setPrice('');
+			setImageFile(null);
+			setLatitude(null);
+			setLongitude(null);
+
+			// Show success message and close modal
+			setSuccess('Post created successfully!');
+			setTimeout(() => {
+				if (onPostCreated) onPostCreated();
+				onClose();
+			}, 1500);
+		} catch (err) {
+			setError(err.message);
+			console.error('Post creation error:', err);
 		} finally {
 			setIsLoading(false);
 		}

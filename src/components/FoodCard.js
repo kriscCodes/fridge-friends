@@ -2,26 +2,33 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { supabase } from '@/lib/supabase';
-import BarterRequestModal from './BarterRequestModal';
 import { useRouter } from 'next/navigation';
+import BarterRequestModal from './BarterRequestModal';
 import BuyConfirmationModal from './BuyConfirmationModal';
+import { processPostImage } from '@/utils/imageUtils';
 
 export function FoodCard({ item }) {
 	const [isBarterModalOpen, setIsBarterModalOpen] = useState(false);
 	const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
-	const [imageUrl, setImageUrl] = useState(null);
-	const router = useRouter();
 	const [buyMessage, setBuyMessage] = useState(null);
+	const [imageUrl, setImageUrl] = useState(null);
+	const [imageError, setImageError] = useState(false);
+	const router = useRouter();
 
 	useEffect(() => {
-		if (item.image_url) {
-			const { data } = supabase.storage
-				.from('barter-images')
-				.getPublicUrl(item.image_url);
-			setImageUrl(data.publicUrl);
-		}
-	}, [item.image_url]);
+		const loadImage = async () => {
+			if (item?.image_url) {
+				try {
+					const url = await processPostImage(item.image_url);
+					setImageUrl(url);
+				} catch (error) {
+					console.error('Error processing post image:', error);
+					setImageError(true);
+				}
+			}
+		};
+		loadImage();
+	}, [item?.image_url]);
 
 	const handleBarter = () => {
 		setIsBarterModalOpen(true);
@@ -37,7 +44,7 @@ export function FoodCard({ item }) {
 				className="bg-white border-4 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex flex-col gap-2 items-stretch"
 				style={{ imageRendering: 'pixelated', minWidth: 280, maxWidth: 340 }}
 			>
-				{imageUrl && (
+				{item?.image_url && !imageError && (
 					<div className="relative w-full h-40 overflow-hidden rounded-lg border-4 border-black">
 						<Image
 							src={imageUrl || '/placeholder.svg'}
@@ -45,7 +52,13 @@ export function FoodCard({ item }) {
 							fill
 							className="object-cover"
 							style={{ imageRendering: 'pixelated' }}
+							onError={() => setImageError(true)}
 						/>
+					</div>
+				)}
+				{imageError && (
+					<div className="w-full h-40 overflow-hidden rounded-lg border-4 border-black bg-gray-100 flex items-center justify-center">
+						<p className="text-xs text-gray-500">Image not available</p>
 					</div>
 				)}
 
@@ -70,7 +83,7 @@ export function FoodCard({ item }) {
 					)}
 				</div>
 
-				<div className="flex flex-row gap-2 mt-2 items-center">
+				<div className="flex gap-2 mt-2">
 					<button
 						onClick={handleBarter}
 						className="flex justify-center items-center focus:outline-none border-none bg-transparent p-0 transition-transform hover:scale-105 active:scale-95"
@@ -88,32 +101,21 @@ export function FoodCard({ item }) {
 					</button>
 					<button
 						onClick={handleBuy}
-						className="flex justify-center items-center focus:outline-none border-4 border-blue-900 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 rounded-[8px] px-4 py-1"
+						className="flex justify-center items-center focus:outline-none border-none bg-transparent p-0 transition-transform hover:scale-105 active:scale-95"
 						aria-label="Buy this item"
-						style={{
-							fontFamily: 'monospace',
-							imageRendering: 'pixelated',
-							letterSpacing: '2px',
-							height: '28px',
-							minWidth: '80px',
-							marginTop: '0px',
-						}}
+						style={{ fontFamily: 'monospace', height: '28px' }}
 					>
-						<span
-							className="text-lg font-bold"
-							style={{
-								fontFamily: 'monospace',
-								color: '#fff',
-								textShadow: '2px 2px 0 #000',
-								letterSpacing: '2px',
-								fontSize: '18px',
-								lineHeight: '18px',
-							}}
-						>
-							BUY
-						</span>
+						<Image
+							src="/images/BuyButton.png"
+							alt="Buy"
+							width={80}
+							height={28}
+							className="object-contain"
+							style={{ imageRendering: 'pixelated' }}
+						/>
 					</button>
 				</div>
+
 				{buyMessage && (
 					<div
 						className="mt-2 text-sm font-mono text-center"

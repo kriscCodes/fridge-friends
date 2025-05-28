@@ -4,10 +4,20 @@ import { useState } from 'react';
 
 export default function Request({ request, isIncoming, onStatusChange, onDelete }) {
 	const [imageError, setImageError] = useState(false);
+	const [actionMessage, setActionMessage] = useState(null);
 
 	const handleAction = async (action) => {
+		setActionMessage(null);
+
+		if (action === 'accepted') {
+			if (request.posts?.status !== 'active') {
+				setActionMessage('Cannot accept: The item is no longer active.');
+				return;
+			}
+		}
+
 		if (onStatusChange) {
-			await onStatusChange(request.id, action);
+			await onStatusChange(request.id, action, request.posts?.post_id);
 		}
 	};
 
@@ -125,6 +135,9 @@ export default function Request({ request, isIncoming, onStatusChange, onDelete 
 							Cancel Request
 						</button>
 					</div>
+				)}
+				{actionMessage && (
+					<p className="text-red-600 text-sm font-mono mt-2 text-center">{actionMessage}</p>
 				)}
 			</div>
 		</div>

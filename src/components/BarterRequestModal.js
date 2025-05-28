@@ -1,13 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { createPortal } from 'react-dom';
+import { uploadOfferImage } from '@/utils/imageUtils';
+import { REQUEST_STATUS } from '@/constants/requestConstants';
+import { createRequest } from '@/services/requests/requestService';
+import PostDetails from '@/components/PostDetails';
 
 export default function BarterRequestModal({ isOpen, onClose, post }) {
 	const [offerName, setOfferName] = useState('');
@@ -16,117 +18,48 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 	const [imagePreview, setImagePreview] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
-	const [postImageUrl, setPostImageUrl] = useState(null);
 	const router = useRouter();
-
-	useEffect(() => {
-		if (post?.image_url) {
-			const { data } = supabase.storage
-				.from('barter-images')
-				.getPublicUrl(post.image_url);
-			setPostImageUrl(data.publicUrl);
-		}
-	}, [post?.image_url]);
 
 	const handleImageChange = async (e) => {
 		const file = e.target.files[0];
 		if (!file) return;
 
 		try {
-			// Check if the file is HEIC
-			if (
-				file.type === 'image/heic' ||
-				file.name.toLowerCase().endsWith('.heic')
-			) {
-				// Dynamically import heic2any only when needed
-				const heic2any = (await import('heic2any')).default;
-
-				// Convert HEIC to JPEG
-				const convertedBlob = await heic2any({
-					blob: file,
-					toType: 'image/jpeg',
-					quality: 0.8,
-				});
-
-				// Create a new File object from the converted blob
-				const convertedFile = new File(
-					[convertedBlob],
-					file.name.replace(/\.heic$/i, '.jpg'),
-					{ type: 'image/jpeg' }
-				);
-
-				setOfferImage(convertedFile);
-				setImagePreview(URL.createObjectURL(convertedFile));
-			} else {
-				setOfferImage(file);
-				setImagePreview(URL.createObjectURL(file));
-			}
+			setOfferImage(file);
+			setImagePreview(URL.createObjectURL(file));
 		} catch (error) {
-			console.error('Error converting image:', error);
+			console.error('Error processing image:', error);
 			setError('Failed to process image. Please try a different file.');
 		}
 	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		console.log('submit fired');
 		setLoading(true);
 		setError(null);
 
 		try {
 			// Get current user
-			const {
-				data: { user },
-				error: userError,
-			} = await supabase.auth.getUser();
+			const { data: { user }, error: userError } = await supabase.auth.getUser();
 			if (userError) throw userError;
 
 			// Upload image if provided
 			let imageUrl = null;
 			if (offerImage) {
-				const fileExt = offerImage.name.split('.').pop();
-				const fileName = `${Math.random()}.${fileExt}`;
-				const { error: uploadError, data } = await supabase.storage
-					.from('offer-images')
-					.upload(fileName, offerImage);
-
-				if (uploadError) throw uploadError;
-
-				// Get the public URL for the uploaded image
-				const {
-					data: { publicUrl },
-				} = supabase.storage.from('offer-images').getPublicUrl(fileName);
-
-				imageUrl = publicUrl;
+				imageUrl = await uploadOfferImage(offerImage);
 			}
 
-			// Create barter request
-			console.log('DEBUG barter_requests insert:', {
+			// Create barter request using the service
+			await createRequest({
 				post_id: post.post_id,
 				from_user_id: user.id,
 				to_user_id: post.user_id,
 				offer_name: offerName,
 				offer_description: offerDescription,
 				offer_image: imageUrl,
-				status: 'pending',
-				trade_type: 'barter',
+				status: REQUEST_STATUS.PENDING,
+				trade_type: 'barter'
 			});
-
-			const { error: requestError, data: insertData } = await supabase
-				.from('barter_requests')
-				.insert({
-					post_id: post.post_id,
-					from_user_id: user.id,
-					to_user_id: post.user_id,
-					offer_name: offerName,
-					offer_description: offerDescription,
-					offer_image: imageUrl,
-					status: 'pending',
-					trade_type: 'barter',
-				});
-			console.log('insertData:', insertData, 'requestError:', requestError);
-
-			if (requestError) throw requestError;
 
 			// Clear form fields
 			setOfferName('');
@@ -157,59 +90,7 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 					Make a Barter Offer
 				</h2>
 
-				{/* Post Details Section */}
-				<div className="mb-6 p-4 bg-gray-50 border-4 border-black rounded-lg">
-					<h3
-						className="text-xl font-bold mb-2 uppercase"
-						style={{ fontFamily: 'monospace' }}
-					>
-						Post Details
-					</h3>
-					<div className="space-y-2">
-						<div className="flex items-start gap-4">
-							{postImageUrl && (
-								<div className="relative w-32 h-32 flex-shrink-0 border-4 border-black">
-									<Image
-										src={postImageUrl}
-										alt={post.name}
-										fill
-										className="object-cover"
-										style={{ imageRendering: 'pixelated' }}
-									/>
-								</div>
-							)}
-							<div className="flex-1">
-								<p
-									className="font-bold text-lg"
-									style={{ fontFamily: 'monospace' }}
-								>
-									{post.name}
-								</p>
-								<p
-									className="text-sm text-gray-600"
-									style={{ fontFamily: 'monospace' }}
-								>
-									Posted by: {post.profiles?.username || 'Unknown'}
-								</p>
-								<p
-									className="text-sm text-gray-600"
-									style={{ fontFamily: 'monospace' }}
-								>
-									Type: {post.type}
-								</p>
-								<p
-									className="text-sm text-gray-600"
-									style={{ fontFamily: 'monospace' }}
-								>
-									Deadline: {new Date(post.deadline).toLocaleDateString()}
-								</p>
-								<p className="text-sm mt-2" style={{ fontFamily: 'monospace' }}>
-									{post.description}
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
+				<PostDetails post={post} showDeadline={true} />
 
 				{error && (
 					<div className="mb-4 p-3 bg-red-100 border-2 border-red-500 text-red-700 rounded">
