@@ -35,3 +35,4 @@ A CUNY student marketplace for bartering and buying items like clothes, furnitur
 - `/components` - Reusable React components
 - `/public` - Static assets (images, icons, etc.)
 - `/styles` - Global styles and Tailwind config
+# trigger
