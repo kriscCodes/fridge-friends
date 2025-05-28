@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import BarterRequestModal from './BarterRequestModal';
 import { useRouter } from 'next/navigation';
+import StripePaymentButton from './StripePaymentButton';
 
 export function FoodCard({ item }) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -44,6 +45,14 @@ export function FoodCard({ item }) {
 		} else {
 			setBuyMessage('Purchase started! Check your ongoing barters.');
 		}
+	};
+
+	const handlePaymentSuccess = () => {
+		setBuyMessage('Payment successful! Check your ongoing purchases.');
+	};
+
+	const handlePaymentError = (error) => {
+		setBuyMessage('Payment failed: ' + error);
 	};
 
 	return (
@@ -101,33 +110,42 @@ export function FoodCard({ item }) {
 							style={{ imageRendering: 'pixelated' }}
 						/>
 					</button>
-					<button
-						onClick={handleBuy}
-						className="flex justify-center items-center focus:outline-none border-4 border-blue-900 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 rounded-[8px] px-4 py-1"
-						aria-label="Buy this item"
-						style={{
-							fontFamily: 'monospace',
-							imageRendering: 'pixelated',
-							letterSpacing: '2px',
-							height: '28px',
-							minWidth: '80px',
-							marginTop: '0px',
-						}}
-					>
-						<span
-							className="text-lg font-bold"
+					{item.price ? (
+						<StripePaymentButton
+							amount={Math.round(parseFloat(item.price) * 100)}
+							itemName={item.name}
+							onSuccess={handlePaymentSuccess}
+							onError={handlePaymentError}
+						/>
+					) : (
+						<button
+							onClick={handleBuy}
+							className="flex justify-center items-center focus:outline-none border-4 border-blue-900 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 rounded-[8px] px-4 py-1"
+							aria-label="Buy this item"
 							style={{
 								fontFamily: 'monospace',
-								color: '#fff',
-								textShadow: '2px 2px 0 #000',
+								imageRendering: 'pixelated',
 								letterSpacing: '2px',
-								fontSize: '18px',
-								lineHeight: '18px',
+								height: '28px',
+								minWidth: '80px',
+								marginTop: '0px',
 							}}
 						>
-							BUY
-						</span>
-					</button>
+							<span
+								className="text-lg font-bold"
+								style={{
+									fontFamily: 'monospace',
+									color: '#fff',
+									textShadow: '2px 2px 0 #000',
+									letterSpacing: '2px',
+									fontSize: '18px',
+									lineHeight: '18px',
+								}}
+							>
+								BUY
+							</span>
+						</button>
+					)}
 				</div>
 				{buyMessage && (
 					<div
