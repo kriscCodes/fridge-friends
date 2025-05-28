@@ -26,6 +26,9 @@ export default function Navbar() {
 		};
 	}, []);
 
+	const buttonClassNames = "px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all w-32 text-center";
+	const buttonStyle = { fontFamily: 'monospace', boxShadow: '2px 2px 0px 0px rgba(0,0,0,1)' };
+
 	return (
 		<nav
 			className="w-full flex items-center justify-between py-3 px-6 border-b-4 border-black relative z-50"
@@ -67,9 +70,10 @@ export default function Navbar() {
 					onClick={() => {
 						router.push('/explore');
 						setIsMenuOpen(false);
+						router.refresh();
 					}}
-					className="bg-yellow-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-yellow-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] w-full md:w-auto"
-					style={{ fontFamily: 'monospace' }}
+					className={`bg-yellow-600 text-white ${buttonClassNames}`}
+					style={buttonStyle}
 				>
 					Explore
 				</button>
@@ -79,9 +83,10 @@ export default function Navbar() {
 						onClick={() => {
 							router.push('/requests');
 							setIsMenuOpen(false);
+							router.refresh();
 						}}
-						className="bg-green-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-green-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] w-full md:w-auto"
-						style={{ fontFamily: 'monospace' }}
+						className={`text-black ${buttonClassNames}`}
+						style={{ ...buttonStyle, backgroundColor: '#ECE852' }}
 					>
 						Offers
 					</button>
@@ -89,14 +94,21 @@ export default function Navbar() {
 
 				{isAuthenticated && (
 					<button
-						onClick={() => {
-							router.push('/ongoing');
-							setIsMenuOpen(false);
-						}}
-						className="bg-blue-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-blue-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] w-full md:w-auto"
-						style={{ fontFamily: 'monospace' }}
+						onClick={() => { router.push('/ongoing'); setIsMenuOpen(false); router.refresh(); }}
+						className={`text-white ${buttonClassNames}`}
+						style={{ ...buttonStyle, backgroundColor: '#3E7B27' }}
 					>
 						Ongoing
+					</button>
+				)}
+
+				{isAuthenticated && (
+					<button
+						onClick={() => { router.push('/completed'); setIsMenuOpen(false); router.refresh(); }}
+						className={`bg-green-800 text-white ${buttonClassNames}`}
+						style={buttonStyle}
+					>
+						Completed
 					</button>
 				)}
 
@@ -105,9 +117,10 @@ export default function Navbar() {
 						onClick={() => {
 							router.push('/profile');
 							setIsMenuOpen(false);
+							router.refresh();
 						}}
-						className="bg-purple-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-purple-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] w-full md:w-auto"
-						style={{ fontFamily: 'monospace' }}
+						className={`bg-purple-600 text-white ${buttonClassNames}`}
+						style={buttonStyle}
 					>
 						Profile
 					</button>

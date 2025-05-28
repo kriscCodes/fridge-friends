@@ -2,49 +2,41 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { supabase } from '@/lib/supabase';
-import BarterRequestModal from './BarterRequestModal';
 import { useRouter } from 'next/navigation';
-import StripePaymentButton from './StripePaymentButton';
+import BarterRequestModal from './BarterRequestModal';
+import BuyConfirmationModal from './BuyConfirmationModal';
+import { processPostImage } from '@/utils/imageUtils';
+import { Button } from '@/components/ui/button';
 
 export function FoodCard({ item }) {
-	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [imageUrl, setImageUrl] = useState(null);
-	const router = useRouter();
+	const [isBarterModalOpen, setIsBarterModalOpen] = useState(false);
+	const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
 	const [buyMessage, setBuyMessage] = useState(null);
+	const [imageUrl, setImageUrl] = useState(null);
+	const [imageError, setImageError] = useState(false);
+	const router = useRouter();
 
 	useEffect(() => {
-		if (item.image_url) {
-			const { data } = supabase.storage
-				.from('barter-images')
-				.getPublicUrl(item.image_url);
-			setImageUrl(data.publicUrl);
-		}
-	}, [item.image_url]);
-
-	const handleBuy = async () => {
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-		console.log('Buy clicked! User:', user, 'Item:', item);
-		if (!user) {
-			setBuyMessage('You must be logged in to buy.');
-			return;
-		}
-		const payload = {
-			post_id: item.id || item.post_id,
-			from_user_id: user.id,
-			to_user_id: item.user_id,
-			offer_name: 'Buy',
-			status: 'accepted',
+		const loadImage = async () => {
+			if (item?.image_url) {
+				try {
+					const url = await processPostImage(item.image_url);
+					setImageUrl(url);
+				} catch (error) {
+					console.error('Error processing post image:', error);
+					setImageError(true);
+				}
+			}
 		};
-		console.log('Inserting barter_request:', payload);
-		const { error } = await supabase.from('barter_requests').insert(payload);
-		if (error) {
-			setBuyMessage('Error creating buy request: ' + error.message);
-		} else {
-			setBuyMessage('Purchase started! Check your ongoing barters.');
-		}
+		loadImage();
+	}, [item?.image_url]);
+
+	const handleBarter = () => {
+		setIsBarterModalOpen(true);
+	};
+
+	const handleBuy = () => {
+		setIsBuyModalOpen(true);
 	};
 
 	const handlePaymentSuccess = () => {
@@ -61,7 +53,7 @@ export function FoodCard({ item }) {
 				className="bg-white border-4 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex flex-col gap-2 items-stretch"
 				style={{ imageRendering: 'pixelated', minWidth: 280, maxWidth: 340 }}
 			>
-				{imageUrl && (
+				{item?.image_url && !imageError && (
 					<div className="relative w-full h-40 overflow-hidden rounded-lg border-4 border-black">
 						<Image
 							src={imageUrl || '/placeholder.svg'}
@@ -69,6 +61,19 @@ export function FoodCard({ item }) {
 							fill
 							className="object-cover"
 							style={{ imageRendering: 'pixelated' }}
+							onError={() => setImageError(true)}
+						/>
+					</div>
+				)}
+				{imageError && (
+					<div className="w-full h-40 overflow-hidden rounded-lg border-4 border-black bg-gray-100 flex items-center justify-center">
+						<p className="text-xs text-gray-500">Image not available</p>
+						<Image
+							src={'/placeholder.svg'}
+							alt="Placeholder"
+							width={40}
+							height={40}
+							className="object-contain"
 						/>
 					</div>
 				)}
@@ -94,59 +99,23 @@ export function FoodCard({ item }) {
 					)}
 				</div>
 
-				<div className="flex flex-row gap-2 mt-2 items-center">
+				<div className="flex gap-2 mt-2">
 					<button
-						onClick={() => setIsModalOpen(true)}
-						className="flex justify-center items-center focus:outline-none border-none bg-transparent p-0 transition-transform hover:scale-105 active:scale-95"
-						aria-label="Barter for this item"
-						style={{ fontFamily: 'monospace', height: '28px' }}
+						onClick={handleBarter}
+						className="w-1/2 bg-blue-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-blue-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] text-center"
+						style={{ fontFamily: 'monospace' }}
 					>
-						<Image
-							src="/images/Barterbutton.png"
-							alt="Barter"
-							width={80}
-							height={28}
-							className="object-contain"
-							style={{ imageRendering: 'pixelated' }}
-						/>
+						Barter
 					</button>
-					{item.price ? (
-						<StripePaymentButton
-							amount={Math.round(parseFloat(item.price) * 100)}
-							itemName={item.name}
-							onSuccess={handlePaymentSuccess}
-							onError={handlePaymentError}
-						/>
-					) : (
-						<button
-							onClick={handleBuy}
-							className="flex justify-center items-center focus:outline-none border-4 border-blue-900 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 rounded-[8px] px-4 py-1"
-							aria-label="Buy this item"
-							style={{
-								fontFamily: 'monospace',
-								imageRendering: 'pixelated',
-								letterSpacing: '2px',
-								height: '28px',
-								minWidth: '80px',
-								marginTop: '0px',
-							}}
-						>
-							<span
-								className="text-lg font-bold"
-								style={{
-									fontFamily: 'monospace',
-									color: '#fff',
-									textShadow: '2px 2px 0 #000',
-									letterSpacing: '2px',
-									fontSize: '18px',
-									lineHeight: '18px',
-								}}
-							>
-								BUY
-							</span>
-						</button>
-					)}
+					<button
+						onClick={handleBuy}
+						className="w-1/2 bg-green-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-green-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] text-center"
+						style={{ fontFamily: 'monospace' }}
+					>
+						Buy
+					</button>
 				</div>
+
 				{buyMessage && (
 					<div
 						className="mt-2 text-sm font-mono text-center"
@@ -158,8 +127,14 @@ export function FoodCard({ item }) {
 			</div>
 
 			<BarterRequestModal
-				isOpen={isModalOpen}
-				onClose={() => setIsModalOpen(false)}
+				isOpen={isBarterModalOpen}
+				onClose={() => setIsBarterModalOpen(false)}
+				post={item}
+			/>
+
+			<BuyConfirmationModal
+				isOpen={isBuyModalOpen}
+				onClose={() => setIsBuyModalOpen(false)}
 				post={item}
 			/>
 		</>

@@ -19,7 +19,7 @@ export default function Home() {
 		<div className="relative w-full min-h-screen overflow-hidden bg-black">
 			{/* Pixel-art city background */}
 			<Image
-				src="/images/FridgeFriends.png"
+				src="/images/UserProfilebg.jpeg"
 				alt="Background"
 				fill
 				priority
@@ -52,10 +52,10 @@ export default function Home() {
 			<div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
 				<div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-4">
 					<img
-						src="/images/Avocado.png"
+						src="/images/FavIcon.PNG"
 						alt="Avocado"
-						width={120}
-						height={120}
+						width={300}
+						height={300}
 						className="w-[120px] h-[120px] md:w-[180px] md:h-[180px]"
 						style={{ imageRendering: 'pixelated' }}
 					/>
@@ -74,10 +74,10 @@ export default function Home() {
 						tory
 					</h1>
 					<img
-						src="/images/Apple.png"
+						src="/images/FavIcon.PNG"
 						alt="Apple"
-						width={120}
-						height={120}
+						width={500}
+						height={500}
 						className="w-[120px] h-[120px] md:w-[180px] md:h-[180px]"
 						style={{ imageRendering: 'pixelated' }}
 					/>

@@ -23,7 +23,7 @@ const collegeBackgrounds = {
 	'Kingsborough Community College': '/images/kcc-college-bg.png',
 	'LaGuardia Community College': '/images/laguardia-college-bg.png',
 	'Queensborough Community College': '/images/qcc-college-bg.png',
-	default: '/images/Userprofilebg.png',
+	default: '/images/UserProfilebg.jpeg',
 };
 
 export default function ProfilePage() {

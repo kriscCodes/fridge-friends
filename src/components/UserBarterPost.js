@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import QRCodeGenerator from './QRCodeGenerator';
-
+import { processPostImage } from '@/utils/imageUtils';
 
 const jersey10 = Jersey_10({
 	subsets: ['latin'],
@@ -14,17 +14,24 @@ const jersey10 = Jersey_10({
 
 export default function UserBarterPost({ post, onDelete }) {
 	const [imageUrl, setImageUrl] = useState(null);
+	const [imageError, setImageError] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
-	const [mode, setMode] = useState(null); 
+	const [mode, setMode] = useState(null);
 
 	useEffect(() => {
-		if (post.image_url) {
-			const { data } = supabase.storage
-				.from('barter-images')
-				.getPublicUrl(post.image_url);
-			setImageUrl(data.publicUrl);
-		}
-	}, [post.image_url]);
+		const loadImage = async () => {
+			if (post?.image_url) {
+				try {
+					const url = await processPostImage(post.image_url);
+					setImageUrl(url);
+				} catch (error) {
+					console.error('Error processing post image:', error);
+					setImageError(true);
+				}
+			}
+		};
+		loadImage();
+	}, [post?.image_url]);
 
 	const handleDelete = async () => {
 		const confirmed = confirm(
@@ -67,18 +74,12 @@ export default function UserBarterPost({ post, onDelete }) {
 		);
 	}
 
-
-	
-
 	return (
-
 		<div
 			className="bg-white border-4 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex flex-col gap-2"
 			style={{ imageRendering: 'pixelated' }}
 		>
-
-
-			{imageUrl && (
+			{post?.image_url && !imageError && (
 				<div className="relative w-full h-40 overflow-hidden rounded-lg border-4 border-black">
 					<Image
 						src={imageUrl || '/placeholder.svg'}
@@ -86,7 +87,13 @@ export default function UserBarterPost({ post, onDelete }) {
 						fill
 						className="object-cover"
 						style={{ imageRendering: 'pixelated' }}
+						onError={() => setImageError(true)}
 					/>
+				</div>
+			)}
+			{imageError && (
+				<div className="w-full h-40 overflow-hidden rounded-lg border-4 border-black bg-gray-100 flex items-center justify-center">
+					<p className="text-xs text-gray-500">Image not available</p>
 				</div>
 			)}
 
@@ -115,8 +122,8 @@ export default function UserBarterPost({ post, onDelete }) {
 					<strong>Barter:</strong> {post.barter_type}
 				</p> */}
 				<p>
-					<strong>Deadline:</strong>{' '}
-					{new Date(post.deadline).toLocaleDateString()}
+					<strong>Status:</strong>{' '}
+					{post.status}
 				</p>
 				{post.price && (
 					<p>

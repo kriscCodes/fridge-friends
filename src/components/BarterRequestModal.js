@@ -1,137 +1,105 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
-import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
+import { createPortal } from 'react-dom';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useRouter } from 'next/navigation';
+import { uploadOfferImage } from '@/utils/imageUtils';
+import { REQUEST_STATUS } from '@/constants/requestConstants';
+import { createRequest } from '@/services/requests/requestService';
+import PostDetails from '@/components/PostDetails';
+import { supabase } from '@/lib/supabase';
 import Image from 'next/image';
-import { createPortal } from 'react-dom';
 
 export default function BarterRequestModal({ isOpen, onClose, post }) {
 	const [offerName, setOfferName] = useState('');
 	const [offerDescription, setOfferDescription] = useState('');
 	const [offerImage, setOfferImage] = useState(null);
-	const [imagePreview, setImagePreview] = useState(null);
+	const [offerImageUrl, setOfferImageUrl] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
-	const [postImageUrl, setPostImageUrl] = useState(null);
 	const router = useRouter();
 
 	useEffect(() => {
-		if (post?.image_url) {
-			const { data } = supabase.storage
-				.from('barter-images')
-				.getPublicUrl(post.image_url);
-			setPostImageUrl(data.publicUrl);
+		// Clear form when modal opens
+		if (isOpen) {
+			setOfferName('');
+			setOfferDescription('');
+			setOfferImage(null);
+			setOfferImageUrl(null);
+			setError(null);
 		}
-	}, [post?.image_url]);
+	}, [isOpen]);
 
-	const handleImageChange = async (e) => {
-		const file = e.target.files[0];
-		if (!file) return;
-
-		try {
-			// Check if the file is HEIC
-			if (
-				file.type === 'image/heic' ||
-				file.name.toLowerCase().endsWith('.heic')
-			) {
-				// Dynamically import heic2any only when needed
-				const heic2any = (await import('heic2any')).default;
-
-				// Convert HEIC to JPEG
-				const convertedBlob = await heic2any({
-					blob: file,
-					toType: 'image/jpeg',
-					quality: 0.8,
-				});
-
-				// Create a new File object from the converted blob
-				const convertedFile = new File(
-					[convertedBlob],
-					file.name.replace(/\.heic$/i, '.jpg'),
-					{ type: 'image/jpeg' }
-				);
-
-				setOfferImage(convertedFile);
-				setImagePreview(URL.createObjectURL(convertedFile));
-			} else {
-				setOfferImage(file);
-				setImagePreview(URL.createObjectURL(file));
-			}
-		} catch (error) {
-			console.error('Error converting image:', error);
-			setError('Failed to process image. Please try a different file.');
+	const handleImageChange = async (event) => {
+		const file = event.target.files?.[0];
+		if (file) {
+			setOfferImage(file);
+			// Display image preview
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				setOfferImageUrl(reader.result);
+			};
+			reader.readAsDataURL(file);
 		}
 	};
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		console.log('submit fired');
+
+		// Fetch user directly before submitting
+		const { data: { user }, error: userError } = await supabase.auth.getUser();
+		if (userError || !user) {
+			setError('User not logged in or session expired.');
+			console.error('Error fetching user:', userError);
+			return;
+		}
+
+		if (!post) {
+			setError('Post details missing.');
+			return;
+		}
+
+		if (!offerName || !offerDescription) {
+			setError('Please provide offer name and description.');
+			return;
+		}
+
 		setLoading(true);
 		setError(null);
 
 		try {
-			// Get current user
-			const {
-				data: { user },
-				error: userError,
-			} = await supabase.auth.getUser();
-			if (userError) throw userError;
-
-			// Upload image if provided
-			let imageUrl = null;
+			let offerImageUrlForDb = null;
 			if (offerImage) {
-				const fileExt = offerImage.name.split('.').pop();
-				const fileName = `${Math.random()}.${fileExt}`;
-				const { error: uploadError, data } = await supabase.storage
-					.from('offer-images')
-					.upload(fileName, offerImage);
-
-				if (uploadError) throw uploadError;
-
-				// Get the public URL for the uploaded image
-				const {
-					data: { publicUrl },
-				} = supabase.storage.from('offer-images').getPublicUrl(fileName);
-
-				imageUrl = publicUrl;
+				offerImageUrlForDb = await uploadOfferImage(offerImage);
 			}
 
-			// Create barter request
-			console.log('DEBUG barter_requests insert:', {
+			const newRequest = {
 				post_id: post.post_id,
-				from_user_id: user.id,
+				from_user_id: user.id, // Use fetched user's ID
 				to_user_id: post.user_id,
 				offer_name: offerName,
 				offer_description: offerDescription,
-				offer_image: imageUrl,
-				status: 'pending',
-			});
+				offer_image: offerImageUrlForDb,
+				status: REQUEST_STATUS.PENDING,
+				trade_type: 'barter',
+				requester_status: false,
+				poster_status: false,
+			};
 
-			const { error: requestError, data: insertData } = await supabase
-				.from('barter_requests')
-				.insert({
-					post_id: post.post_id,
-					from_user_id: user.id,
-					to_user_id: post.user_id,
-					offer_name: offerName,
-					offer_description: offerDescription,
-					offer_image: imageUrl,
-					status: 'pending',
-				});
-			console.log('insertData:', insertData, 'requestError:', requestError);
+			await createRequest(newRequest);
 
-			if (requestError) throw requestError;
-
-			// Close modal and refresh
+			// Clear form and close modal on success
+			setOfferName('');
+			setOfferDescription('');
+			setOfferImage(null);
+			setOfferImageUrl(null);
 			onClose();
 			router.refresh();
 		} catch (err) {
-			setError(err.message);
-			console.error('Barter request error:', err);
+			console.error('Error creating barter request:', err);
+			setError('Failed to create barter request.');
 		} finally {
 			setLoading(false);
 		}
@@ -140,8 +108,8 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 	if (!isOpen) return null;
 
 	const modalContent = (
-		<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[10000]">
-			<div className="bg-white border-4 border-black p-6 max-w-2xl w-full mx-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+		<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[10000] overflow-y-auto">
+			<div className="bg-white border-4 border-black p-6 max-w-2xl w-full mx-4 my-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-y-auto max-h-[calc(100vh-2rem)]">
 				<h2
 					className="text-2xl font-bold mb-4 uppercase"
 					style={{ fontFamily: 'monospace', letterSpacing: '1px' }}
@@ -149,59 +117,7 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 					Make a Barter Offer
 				</h2>
 
-				{/* Post Details Section */}
-				<div className="mb-6 p-4 bg-gray-50 border-4 border-black rounded-lg">
-					<h3
-						className="text-xl font-bold mb-2 uppercase"
-						style={{ fontFamily: 'monospace' }}
-					>
-						Post Details
-					</h3>
-					<div className="space-y-2">
-						<div className="flex items-start gap-4">
-							{postImageUrl && (
-								<div className="relative w-32 h-32 flex-shrink-0 border-4 border-black">
-									<Image
-										src={postImageUrl}
-										alt={post.name}
-										fill
-										className="object-cover"
-										style={{ imageRendering: 'pixelated' }}
-									/>
-								</div>
-							)}
-							<div className="flex-1">
-								<p
-									className="font-bold text-lg"
-									style={{ fontFamily: 'monospace' }}
-								>
-									{post.name}
-								</p>
-								<p
-									className="text-sm text-gray-600"
-									style={{ fontFamily: 'monospace' }}
-								>
-									Posted by: {post.profiles?.username || 'Unknown'}
-								</p>
-								<p
-									className="text-sm text-gray-600"
-									style={{ fontFamily: 'monospace' }}
-								>
-									Type: {post.type}
-								</p>
-								<p
-									className="text-sm text-gray-600"
-									style={{ fontFamily: 'monospace' }}
-								>
-									Deadline: {new Date(post.deadline).toLocaleDateString()}
-								</p>
-								<p className="text-sm mt-2" style={{ fontFamily: 'monospace' }}>
-									{post.description}
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
+				<PostDetails post={post} showDeadline={true} />
 
 				{error && (
 					<div className="mb-4 p-3 bg-red-100 border-2 border-red-500 text-red-700 rounded">
@@ -219,10 +135,11 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 						</label>
 						<Input
 							type="text"
+							id="offer-name"
 							value={offerName}
 							onChange={(e) => setOfferName(e.target.value)}
-							required
 							className="w-full"
+							required
 							style={{ fontFamily: 'monospace' }}
 						/>
 					</div>
@@ -235,49 +152,34 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 							Description
 						</label>
 						<Textarea
+							id="offer-description"
 							value={offerDescription}
 							onChange={(e) => setOfferDescription(e.target.value)}
-							required
 							className="w-full"
+							required
 							style={{ fontFamily: 'monospace' }}
 						/>
+						
 					</div>
 
 					<div>
-						<label className="block text-xs font-bold mb-1 font-mono uppercase tracking-widest">
+						<label htmlFor="offer-image" className="block text-xs font-bold mb-1 font-mono uppercase tracking-widest">
 							IMAGE (OPTIONAL)
 						</label>
-						<input
+						<Input
+							id="offer-image"
 							type="file"
-							accept="image/*"
+							accept="image/*,.heic"
 							onChange={handleImageChange}
-							className="w-full px-2 py-1 border-4 border-black font-mono text-xs focus:outline-none"
-							style={{ borderRadius: 0 }}
+							className="mt-1 block w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-[1px] file:border-black file:text-sm file:font-semibold file:bg-gray-50 hover:file:bg-gray-100"
 						/>
-						{imagePreview && (
-							<div
-								className="mt-2 mb-1 border-4 border-black"
-								style={{
-									width: 120,
-									height: 120,
-									imageRendering: 'pixelated',
-									borderRadius: 0,
-								}}
-							>
-								<img
-									src={imagePreview}
-									alt="Preview"
-									style={{
-										width: '100%',
-										height: '100%',
-										objectFit: 'cover',
-										imageRendering: 'pixelated',
-										borderRadius: 0,
-									}}
-								/>
+						{offerImageUrl && (
+							<div className="mt-4 relative w-32 h-32 rounded-md overflow-hidden">
+								<Image src={offerImageUrl} alt="Offer Preview" fill style={{ objectFit: 'cover' }} />
 							</div>
 						)}
 					</div>
+					{error && <p className="text-red-500 text-sm">{error}</p>}
 					<div className="flex justify-end gap-2 mt-4">
 						<button
 							type="button"
@@ -289,10 +191,11 @@ export default function BarterRequestModal({ isOpen, onClose, post }) {
 						</button>
 						<button
 							type="submit"
-							className="px-4 py-2 bg-green-600 text-white font-mono font-bold uppercase border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:outline-none"
+							disabled={loading}
+							className="px-4 py-2 bg-green-600 text-white font-mono font-bold uppercase border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
 							style={{ borderRadius: 0, letterSpacing: '0.08em' }}
 						>
-							Submit
+							{loading ? 'Sending Offer...' : 'Send Offer'}
 						</button>
 					</div>
 				</form>
