@@ -27,7 +27,7 @@ export default function OngoingBartersPage() {
 			<div
 				className="min-h-screen w-full flex items-center justify-center"
 				style={{
-					backgroundImage: "url('/images/BarterRequestsbg.png')",
+					backgroundImage: "url('/images/ONGOINGFARTERS.PNG')",
 					backgroundSize: 'cover',
 					backgroundPosition: 'center',
 					imageRendering: 'pixelated',
@@ -51,7 +51,7 @@ export default function OngoingBartersPage() {
 			<main
 				className="flex min-h-screen p-6"
 				style={{
-					backgroundImage: "url('/images/BarterRequestsbg.png')",
+					backgroundImage: "url('/images/ONGOINGFARTERS.PNG')",
 					backgroundSize: 'cover',
 					backgroundPosition: 'center',
 					imageRendering: 'pixelated',

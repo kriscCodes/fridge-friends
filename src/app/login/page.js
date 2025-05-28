@@ -47,8 +47,8 @@ export default function LoginPage() {
 			{/* Background Image */}
 			<div className="absolute inset-0 z-0">
 				<Image
-					src="/images/NYCBG.png"
-					alt="NYC Pixel Background"
+					src="/images/Login.png"
+					alt="Login Background"
 					fill
 					className="object-cover image-rendering-pixelated"
 					priority
