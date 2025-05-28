@@ -1,5 +1,4 @@
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function CompletionConfirmationModal({
   isOpen,
@@ -13,9 +12,9 @@ export default function CompletionConfirmationModal({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Confirm Barter Completion</DialogTitle>
-          <DialogDescription>
+          <div className="text-sm text-gray-500">
             Click confirm to confirm that you have completed the barter. You will have to wait until the other user confirms also if they have not done so.
-          </DialogDescription>
+          </div>
         </DialogHeader>
         <div className="py-4">
           {/* Optionally display some barter details here */}
@@ -23,12 +22,25 @@ export default function CompletionConfirmationModal({
             <p className="text-sm text-gray-500">Item: {barterDetails.barter_posts?.name}</p>
           )}
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={isUpdatingStatus}>Cancel</Button>
-          <Button onClick={onConfirm} disabled={isUpdatingStatus}>
+        <div className="flex justify-end gap-2 mt-4">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 bg-red-600 text-white font-mono font-bold uppercase border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:outline-none"
+            style={{ borderRadius: 0, letterSpacing: '0.08em' }}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={isUpdatingStatus}
+            className="px-4 py-2 bg-green-600 text-white font-mono font-bold uppercase border-4 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ borderRadius: 0, letterSpacing: '0.08em' }}
+          >
             {isUpdatingStatus ? 'Confirming...' : 'Confirm'}
-          </Button>
-        </DialogFooter>
+          </button>
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -57,8 +57,8 @@ export default function BuyConfirmationModal({ isOpen, onClose, post }) {
     if (!isOpen) return null;
 
     const modalContent = (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[10000]">
-            <div className="bg-white border-4 border-black p-6 max-w-2xl w-full mx-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[10000] overflow-y-auto">
+            <div className="bg-white border-4 border-black p-6 max-w-2xl w-full mx-4 my-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-y-auto max-h-[calc(100vh-2rem)]">
                 <h2
                     className="text-2xl font-bold mb-4 uppercase"
                     style={{ fontFamily: 'monospace', letterSpacing: '1px' }}

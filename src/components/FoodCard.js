@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import BarterRequestModal from './BarterRequestModal';
 import BuyConfirmationModal from './BuyConfirmationModal';
 import { processPostImage } from '@/utils/imageUtils';
+import { Button } from '@/components/ui/button';
 
 export function FoodCard({ item }) {
 	const [isBarterModalOpen, setIsBarterModalOpen] = useState(false);
@@ -59,6 +60,13 @@ export function FoodCard({ item }) {
 				{imageError && (
 					<div className="w-full h-40 overflow-hidden rounded-lg border-4 border-black bg-gray-100 flex items-center justify-center">
 						<p className="text-xs text-gray-500">Image not available</p>
+						<Image
+							src={'/placeholder.svg'}
+							alt="Placeholder"
+							width={40}
+							height={40}
+							className="object-contain"
+						/>
 					</div>
 				)}
 
@@ -86,33 +94,17 @@ export function FoodCard({ item }) {
 				<div className="flex gap-2 mt-2">
 					<button
 						onClick={handleBarter}
-						className="flex justify-center items-center focus:outline-none border-none bg-transparent p-0 transition-transform hover:scale-105 active:scale-95"
-						aria-label="Barter for this item"
-						style={{ fontFamily: 'monospace', height: '28px' }}
+						className="w-1/2 bg-blue-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-blue-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] text-center"
+						style={{ fontFamily: 'monospace' }}
 					>
-						<Image
-							src="/images/Barterbutton.png"
-							alt="Barter"
-							width={80}
-							height={28}
-							className="object-contain"
-							style={{ imageRendering: 'pixelated' }}
-						/>
+						Barter
 					</button>
 					<button
 						onClick={handleBuy}
-						className="flex justify-center items-center focus:outline-none border-none bg-transparent p-0 transition-transform hover:scale-105 active:scale-95"
-						aria-label="Buy this item"
-						style={{ fontFamily: 'monospace', height: '28px' }}
+						className="w-1/2 bg-green-600 text-white px-4 py-2 rounded-lg border-2 border-black font-bold uppercase hover:bg-green-700 transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] text-center"
+						style={{ fontFamily: 'monospace' }}
 					>
-						<Image
-							src="/images/BuyButton.png"
-							alt="Buy"
-							width={80}
-							height={28}
-							className="object-contain"
-							style={{ imageRendering: 'pixelated' }}
-						/>
+						Buy
 					</button>
 				</div>
 
