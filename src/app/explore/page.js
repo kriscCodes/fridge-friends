@@ -6,6 +6,8 @@ import Navbar from '@/components/Navbar';
 import ItemGrid from '@/components/ItemGrid';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import { cn } from '@/lib/utils';
+import { PixelButton } from '@/components/PixelButton';
 
 const tabButtons = [
 	{ label: 'nearby', img: '/images/Nearbybutton.png' },
@@ -16,7 +18,7 @@ const tabButtons = [
 ];
 
 export default function Explore() {
-	const [activeTab, setActiveTab] = useState('nearby');
+	const [activeTab, setActiveTab] = useState('all');
 
 	return (
 		<div className="relative min-h-screen w-full overflow-x-hidden">
@@ -34,21 +36,25 @@ export default function Explore() {
 
 			{/* Main Content with Tabs */}
 			<main className="relative z-10 max-w-6xl mx-auto pt-24 md:pt-8 pb-16 px-4">
-				<Tabs defaultValue="nearby" className="w-full" onValueChange={setActiveTab}>
-					<TabsList className="flex flex-row flex-wrap justify-center gap-2 mb-8 bg-transparent border-none shadow-none">
+				<Tabs
+					defaultValue="all"
+					className="w-full bg-transparent"
+					onValueChange={setActiveTab}
+				>
+					<TabsList className="flex flex-row flex-wrap justify-center gap-2 mb-8 bg-transparent p-0 m-0 shadow-none border-none">
 						{tabButtons.map((tab) => (
 							<TabsTrigger
 								key={tab.label}
 								value={tab.label}
-								className="group px-4 py-2 rounded-lg border-4 border-black font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-1 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all focus:ring-0 focus:outline-none data-[state=active]:translate-y-1 data-[state=active]:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] w-32 text-center"
-								style={{
-									fontFamily: 'monospace',
-									letterSpacing: '1px',
-									backgroundColor: activeTab === tab.label ? '#A86523' : '#FCEFCB',
-									color: activeTab === tab.label ? 'white' : 'black',
-								}}
+								className="p-0 border-none shadow-none bg-transparent data-[state=active]:bg-transparent"
 							>
-								{tab.label}
+								<PixelButton
+									onClick={() => setActiveTab(tab.label)}
+									src={tab.img}
+									alt={tab.label}
+									width={100}
+									height={40}
+								/>
 							</TabsTrigger>
 						))}
 					</TabsList>
