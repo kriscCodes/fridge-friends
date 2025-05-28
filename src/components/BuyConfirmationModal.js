@@ -142,7 +142,7 @@ export default function BuyConfirmationModal({ isOpen, onClose, post }) {
                             className="block text-sm font-bold mb-1 uppercase"
                             style={{ fontFamily: 'monospace' }}
                         >
-                            Your Name (Optional)
+                            Title (Optional)
                         </label>
                         <Input
                             type="text"
