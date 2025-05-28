@@ -45,7 +45,7 @@ export default function BuyConfirmationModal({ isOpen, onClose, post }) {
                     post_id: post.post_id,
                     from_user_id: user.id,
                     to_user_id: post.user_id,
-                    offer_name: offerName || 'Buy',
+                    offer_name: offerName,
                     offer_description: offerDescription,
                     status: 'pending',
                     trade_type: 'buy'
@@ -142,7 +142,7 @@ export default function BuyConfirmationModal({ isOpen, onClose, post }) {
                             className="block text-sm font-bold mb-1 uppercase"
                             style={{ fontFamily: 'monospace' }}
                         >
-                            Title (Optional)
+                            Title(Optional)
                         </label>
                         <Input
                             type="text"
@@ -150,7 +150,7 @@ export default function BuyConfirmationModal({ isOpen, onClose, post }) {
                             onChange={(e) => setOfferName(e.target.value)}
                             className="w-full"
                             style={{ fontFamily: 'monospace' }}
-                            placeholder="Enter your name"
+                            placeholder="Title"
                         />
                     </div>
 
